@@ -153,6 +153,7 @@ try:
 except:
     print("somethings wrong.")
 ```
+\>\> 출력
 
     Triad vs Triplet
     
