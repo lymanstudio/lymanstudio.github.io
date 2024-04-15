@@ -1,7 +1,7 @@
-'''
-layout: single
-title: "예시를 통한 LCEL(LangChain Expression Language) 알아보기"
-'''
+---
+layout: post
+title:  "예시를 통한 LCEL(LangChain Expression Language) 알아보기"
+---
 
 ## LangChain의 LCEL을 적용해 Chain 생성해보기
 
