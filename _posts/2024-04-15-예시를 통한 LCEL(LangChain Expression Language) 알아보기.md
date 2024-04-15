@@ -3,7 +3,13 @@ layout: single
 title:  "예시를 통한 LCEL(LangChain Expression Language) 알아보기"
 ---
 
-## LangChain의 LCEL을 적용해 Chain 생성해보기
+# LangChain의 LCEL을 적용해 Chain 생성해보기
+
+
+
+## LCEL이란?
+
+<img src="/Users/lymansong/Documents/GitHub/lymanstudio.github.io/images/2024-04-15-예시를 통한 LCEL(LangChain Expression Language) 알아보기/lcel_image_1.png" alt="lcel_image_1" style="zoom:20%;" />
 
 LCEL은 LangChain Expression Language의 약자로 LangChain에서 개발한 언어라기보단 간단한 문법이다. Language Model을 활용하는 어플리케이션을 개발할 때 프로픔트, 모델, 출력 파서 등 다양한 컴포넌트들을 따로 개발하여 이어준 객체를 Chain이라고 하는데 이 체인 생성을 간단하게 구성하게끔 만든 것이다.
 
@@ -15,7 +21,11 @@ LM을 사용한 어플리케이션 개발 중 각 컴포넌트들을 블록 단�
 
 
 
+## 예제 실습
+
 #### 1. 필요한 API 키를 환경 변수에 등록
+
+LLM 모델로 OpenAI의 ChatGPT를 사용할 것으므로 이번 실습에 필요한 API 키는 OpenAI API 키 하나이다. 실습하는 사람이 사용하는 LLM의 종류에 따라 다른 API key가 필요하다.
 
 
 ```python
@@ -23,7 +33,7 @@ from dotenv import load_dotenv
 load_dotenv(dotenv_path= "/Users/yourname/yourdirectory/.env")
 ```
 
-\>\> 출력 결과: 잘 적용됐으면 True, 안됐으면 False
+\>\> 출력 (잘 적용됐으면 True, 안됐으면 False)
 
 
     True
@@ -31,6 +41,8 @@ load_dotenv(dotenv_path= "/Users/yourname/yourdirectory/.env")
 
 
 #### 2. 관련 라이브러리 import 및 모델 인스턴스 생성
+
+관련 라이브러리는 모두 langchain 라이브러리에 있다. LLM 모델은 gpt 3.5를 사용했다.
 
 
 ```python
@@ -40,6 +52,8 @@ from langchain_core.output_parsers import StrOutputParser
 
 model = ChatOpenAI(model = 'gpt-3.5-turbo', max_tokens=2048)
 ```
+
+
 
 #### 3. 프롬프트 생성
 
@@ -63,6 +77,8 @@ prompt = PromptTemplate(
 )
 ```
 
+
+
 #### 4. LCEL을 사용한 Chain 생성
 
 - or 연산자 character(`|`)를 사용해여 간단하게 컴포넌트들을 이어줄 수 있다.
@@ -81,6 +97,8 @@ chain = prompt | model | StrOutputParser()
 from langchain.chains import LLMChain
 llmchain = LLMChain(llm = model, prompt = prompt)
 ```
+
+
 
 #### 5. 실행
 
