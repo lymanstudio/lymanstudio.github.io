@@ -23,7 +23,7 @@ from dotenv import load_dotenv
 load_dotenv(dotenv_path= "/Users/yourname/yourdirectory/.env")
 ```
 
-dotenv를 사용한 환경 변수 결과 출력
+\>\> 출력 결과: 잘 적용됐으면 True, 안됐으면 False
 
 
     True
