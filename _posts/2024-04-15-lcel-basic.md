@@ -51,8 +51,8 @@ model = ChatOpenAI(model = 'gpt-3.5-turbo', max_tokens=2048)
 ## 템플릿 설정
 template = """
 What are the differences between {word1} and {word2}? 
-The output should have title in the first section contains two words.
-And tell me some differences with partitioned by bullet points."
+The output should have title in the first section contains the two words.
+And tell me some differences partitioned by bullet points."
 """
 
 ## 설정한 템플릿을 이용해 프롬프트 생성
@@ -73,7 +73,7 @@ prompt = PromptTemplate(
 chain = prompt | model | StrOutputParser()
 ```
 
-위 과정은 LLMChain을 임포트해서 구성하는 다음 코드와 동일함
+위 과정은 LLMChain을 임포트해서 구성하는 다음 코드와 동일하다.
 
 
 ```python
@@ -91,7 +91,7 @@ result = chain.invoke({"word1": "triad", "word2": "triplet"})
 print(result)
 ```
 
-> 출력
+\>\> 출력
 
     Triad vs Triplet
     
@@ -116,7 +116,7 @@ for result in results:
     print("===========================")
 ```
 
-> 출력
+\>\> 출력
 
     Triad vs. Triplet
     
@@ -142,7 +142,8 @@ for result in results:
     - Conquer may involve defeating an enemy in battle, while dominate can involve outperforming or outmaneuvering competitors.
     ===========================
 
-- LLMChain 객체: run() 메서드로 호출, 템플릿에서 넣어줬던 변수들은 함수의 인자로 역할을 함, 설정한 변수들을 모두 넣어줘야 함
+- LLMChain 객체: run() 메서드로 호출하며 템플릿에서 넣어줬던 변수들은 함수의 인자로 역할을 한다.
+  - 이때 설정한 변수들을 모두 넣어주지 않으면 에러가 난다.  
 
 ```python
 try:
