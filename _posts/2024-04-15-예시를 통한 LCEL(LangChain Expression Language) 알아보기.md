@@ -1,4 +1,4 @@
-## LCEL 예시 노트북
+## LangChain의 LCEL을 적용해 Chain 생성해보기
 
 LCEL은 LangChain Expression Language의 약자로 LangChain에서 개발한 간단한 문법이다. LM을 이용해 어플리케이션을 개발할 때 프로픔트, 모델, 출력 파서 등 다양한 컴포넌트들을 따로 개발하여 이어준 객체를 Chain이라고 하는데 이 체인 생성을 간단하게 구성하게끔 만든 것이다.
 
