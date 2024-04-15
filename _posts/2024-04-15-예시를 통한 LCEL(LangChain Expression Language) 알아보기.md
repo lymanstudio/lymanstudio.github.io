@@ -10,16 +10,12 @@ LM을 사용한 어플리케이션 개발 중 각 컴포넌트들을 블록 단�
 
 
 
-#### 1. root dir 설정 및 API 키를 환경 변수에 등록
+#### 1. 필요한 API 키를 환경 변수에 등록
 
 
 ```python
-import os
-base_dir = '/Users/lymansong/Documents/GitHub/study/langchain_tutorial'
-os.chdir(base_dir)
-
 from dotenv import load_dotenv
-load_dotenv(dotenv_path= "/Users/lymansong/Documents/GitHub/study/.env")
+load_dotenv(dotenv_path= "/Users/yourname/yourdirectory/.env")
 ```
 
 dotenv를 사용한 환경 변수 결과 출력
