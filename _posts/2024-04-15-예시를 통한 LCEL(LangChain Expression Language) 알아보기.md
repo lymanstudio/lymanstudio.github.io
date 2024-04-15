@@ -9,7 +9,7 @@ title:  "예시를 통한 LCEL(LangChain Expression Language) 알아보기"
 
 ## LCEL이란?
 
-<img src="/Users/lymansong/Documents/GitHub/lymanstudio.github.io/images/2024-04-15-예시를 통한 LCEL(LangChain Expression Language) 알아보기/lcel_image_1.png" alt="lcel_image_1" style="zoom:20%;" />
+<img src="../images/2024-04-15-예시를 통한 LCEL(LangChain Expression Language) 알아보기/lcel_image_1.png" alt="lcel_image_1" style="zoom:25%;" />
 
 LCEL은 LangChain Expression Language의 약자로 LangChain에서 개발한 언어라기보단 간단한 문법이다. Language Model을 활용하는 어플리케이션을 개발할 때 프로픔트, 모델, 출력 파서 등 다양한 컴포넌트들을 따로 개발하여 이어준 객체를 Chain이라고 하는데 이 체인 생성을 간단하게 구성하게끔 만든 것이다.
 
@@ -196,4 +196,4 @@ except:
 
 ---
 
-- [테디노트 - <랭체인LangChain 노트> - CH01-03](https://wikidocs.net/233344)
+- [테디노트 - 랭체인LangChain 노트](https://wikidocs.net/233344)
