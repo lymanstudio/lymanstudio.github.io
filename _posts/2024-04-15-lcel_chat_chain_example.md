@@ -126,11 +126,6 @@ template = """
 ## 당신의 답변:
 """
 
-# prompt = PromptTemplate(
-#     template= template,
-#     input_variables= ['question'],
-#     partial_variables= {"context": "sql에서 nvl에 해당하는 함수를 알려주세요."}
-# )
 prompt = PromptTemplate.from_template(template)
 ```
 
