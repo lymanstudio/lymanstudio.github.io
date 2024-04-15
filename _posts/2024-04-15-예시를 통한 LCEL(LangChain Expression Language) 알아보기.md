@@ -1,5 +1,5 @@
 ---
-layout: post
+layout: single
 title:  "예시를 통한 LCEL(LangChain Expression Language) 알아보기"
 ---
 
