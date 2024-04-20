@@ -33,6 +33,9 @@ Document class는 `langchain_core.documents`에 위치한 클래스로 랭체인
 - page_content: str 타입으로 문서가 담고 있는 컨텐츠 자체이다.
 
 예를 들면 어느 한 논문을 가져와 Document들로 구성한다고 하면 다음과 같은 꼴이 될 것이다.
+
+
+
 | document_id | page_id | content_type  | text                                                               |
 |-------------|---------|---------------|--------------------------------------------------------------------|
 |     doc1    | 1       | ABSTRACT      | This paper presents a new framework to..                           |
@@ -40,6 +43,8 @@ Document class는 `langchain_core.documents`에 위치한 클래스로 랭체인
 |     doc3    | 2       | RELATED_WORKS | Detecting and classifying floor-plan basic elements..              |
 | ...         | ...     | ...           | ...                                                                |
 |    doc100   | 17      | REFERENCES    | Kingma, D.P.; Ba, J. Adam: A method for stochastic optimization... |
+
+
 
 이 테이블에서  `document_id`, `page_id`, `content_type`필드들은 metadata에 들어갈 것이며 `text`필드는 page_content가 될 것이다.
 
