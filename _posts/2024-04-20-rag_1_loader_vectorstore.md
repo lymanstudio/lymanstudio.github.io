@@ -19,7 +19,7 @@ tags: [LangChain, RAG]
 
 이번 포스트에선 앞선 세 단계에 대한 전반적인 개념 위주로 설명할 것이며 다룰 내용은 다음과 같다.
 
-![vector_store_search](../images/2024-04-20-rag_1_loader_vectorstore/vector_store_search.jpg)
+![vector_store_search](../../images/2024-04-20-rag_1_loader_vectorstore/vector_store_search.jpg)
 
 1. LangChain의 Document Loader에 대해 알아본 후 PDF loader로 pdf 자료의 텍스트 데이터를 Document 형식으로 가져오는 방법을 알아본 후
 2. 구성된 Document들을 임베딩 벡터로 변환하여 VectorStore에 저장하고 사용자의 질문에 대해 적절한 Document들을 반환하는 것까지 알아볼 예정이다.
@@ -187,7 +187,7 @@ pixel line. Then, the ﬂoor plan graph is fed into a GNN ...
 
 이를 해결하기 위해 우리는 질문에 대한 가장 유사성이 높은 Documents만 뽑은 뒤 그 내용을 프롬프트에 Context로 넣어주고 LM은 사용자 질문, 시스템 프롬프트, 그리고 이 맥락을 기반으로 답변을 생성할 수 있다.
 
-![rag_simple_diagram](../images/2024-04-20-rag_1_loader_vectorstore/rag_simple_diagram.jpg)
+![rag_simple_diagram](../../images/2024-04-20-rag_1_loader_vectorstore/rag_simple_diagram.jpg)
 
 ### 벡터 스토어 생성 & 문서 임베딩
 
