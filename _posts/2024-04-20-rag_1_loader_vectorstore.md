@@ -1,6 +1,7 @@
 ---
 layout: single
 title:  "RAG 실습 1. PDF파일과 대화하기(상: Document Loading/Vector Store 구성 및 검색)"
+classes: wide
 ---
 
 이번 프로젝트는 RAG(Retrieval-Augmented Generation)를 사용하는 실습으로 유저가 PDF를 업로드하고 모델이 PDF 파일의 내용을 숙지하게 만든 뒤 유저의 자연어 질문에 대해 PDF 내용을 근거로 답변해주는 챗봇을 만들어 보는 것이다.
