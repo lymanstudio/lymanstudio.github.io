@@ -1,6 +1,8 @@
 ---
 layout: single
 title:  "대화형 체인 실습: 메모리와 LCEL 적용해보기"
+classes: wide
+categories: LangChain
 ---
 
 ### 대화형 체인
