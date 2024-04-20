@@ -66,7 +66,7 @@ doc.page_content = "This paper presents a new framework to classify floor plan e
 그렇다면 위의 Document를 생성해보자. LangChain의 구성 라이브러리 중 하나인 langchain_community엔 `document_loaders`란 폴더가 있다. 여기엔 여러 가지 형태의 Document Loader들이 정의 돼있으며 문서의 타입이나 포맷에 따라 거기에 맞는 미리 구성된 loader들을 사용하면 된다. 
 
 모든 loader들은 `BaseLoader`라는 클래스를 상속받아 구현돼있다. `BaseLoader`([🔗](https://github.com/langchain-ai/langchain/blob/master/libs/core/langchain_core/document_loaders/base.py))는 `load()`라는 메서드로 document를 가져와 `List[Document]`형태로 반환한다. 
-    - `load_and_split` 메서드는 `RecursiveCharacterTextSplitter`를 사용해 load한 긴 문서를 여러 개의 chunk들로 나눠 반환한다(근데 deprecate될 예정이니 override하지 말라고 써있다). chunk에 대해선 아래에서 더 자세히 설명할 예정이다.
+  - `load_and_split` 메서드는 `RecursiveCharacterTextSplitter`를 사용해 load한 긴 문서를 여러 개의 chunk들로 나눠 반환한다(근데 deprecate될 예정이니 override하지 말라고 써있다). chunk에 대해선 아래에서 더 자세히 설명할 예정이다.
 
 자 그럼 우선 가장 기본적인 TextLoader를 사용해서 예시로 사용될 논문의 초록 txt 파일을 가져와보자.
 파일 경로를 인자로 `TextLoader` 객체를 하나 만들고 `load()`로 `Document` 리스트를 반환한다.
