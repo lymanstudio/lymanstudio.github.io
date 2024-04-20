@@ -18,7 +18,7 @@ minimal_mistakes_skin    : "air" # "air", "aqua", "contrast", "dark", "dirt", "n
 locale                   : "en-US"
 title                    : "LyMan's Studio"
 title_separator          : "-"
-subtitle                 : Lyman’s Language Model Application Studio
+subtitle                 : "Lyman’s Language Model Application Studio"
 name                     : "Lyman Song"
 description              : "Data Analyst/Language Model Application Developer"
 url                      : "https://lymanstudio.github.io"
