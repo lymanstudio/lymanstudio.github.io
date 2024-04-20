@@ -106,7 +106,7 @@ analytics:
 author:
   name             : "Lyman Song"
   avatar           : # path of avatar image, e.g. "/assets/images/bio-photo.jpg"
-  bio              : "LData Analyst, LM Application Developer"
+  bio              : "Data Analyst, LM Application Developer"
   email            : "linpoche27@gmail.com"
   links:
     - label: "Email"
