@@ -8,10 +8,10 @@ classes: wide
 
 이를 위해 우리가 필요한 컴포넌트들은 다음과 같다.
 
-- PDF loading: 유저가 업로드하는 PDF를 읽어와 필요하다면 부분으로 나눈 듸 각 부분들을 모델이 알아들을 수 있는 타입으로 변환하는 단계
-- Make a vectorstore: 임베딩 벡터로 변환 & 벡터 스토어에 저장
-- Semantic search and document retrieving: 유저의 질문을 입력받아 의미적으로 유사하고 적절한 Document를 반환하는 단계
-- Answer generation: 반환된 Document들을 context로 질문에 대한 적절한 답변 생성
+- PDF 로딩: 유저가 업로드하는 PDF를 읽어와 필요하다면 부분으로 나눈 뒤 각 부분들을 모델이 알아들을 수 있는 타입으로 변환하는 단계
+- 벡터 스토어 생성: 임베딩 벡터로 변환 & 벡터 스토어에 저장
+- Semantic search & Document 반환: 유저의 질문을 입력받아 의미적으로 유사하고 적절한 Document를 반환하는 단계
+- 답변 생성: 반환된 Document들을 context로 질문에 대한 적절한 답변 생성
 
 
 
