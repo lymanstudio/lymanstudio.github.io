@@ -22,6 +22,8 @@ classes: wide
 1. LangChain의 Document Loader에 대해 알아본 후 PDF loader로 pdf 자료의 텍스트 데이터를 Document 형식으로 가져오는 방법을 알아본 후
 2. 구성된 Document들을 임베딩 벡터로 변환하여 VectorStore에 저장하고 사용자의 질문에 대해 적절한 Document들을 반환하는 것까지 알아볼 예정이다.
 
+---
+
 
 
 # Step1.  LangChain의 Document Loader에 대해 알아보기
@@ -167,6 +169,8 @@ pixel line. Then, the ﬂoor plan graph is fed into a GNN ...
 19. Hu, R.; Huang, Z.; Tang, Y.; van Kaick, O.; Zhang, ...
 ※ Metadata: page = 16
 ```
+
+---
 
 
 
