@@ -181,7 +181,7 @@ pixel line. Then, the ﬂoor plan graph is fed into a GNN ...
 
 이를 해결하기 위해 우리는 질문에 대한 가장 유사성이 높은 Documents만 뽑은 뒤 그 내용을 프롬프트에 Context로 넣어주고 LM은 사용자 질문, 시스템 프롬프트, 그리고 이 맥락을 기반으로 답변을 생성할 수 있다.
 
-
+![rag_simple_diagram](../images/2024-04-20-rag_1_loader_vectorstore/rag_simple_diagram.jpg)
 
 ### 벡터 스토어 생성 & 문서 임베딩
 
