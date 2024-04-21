@@ -178,11 +178,9 @@ pixel line. Then, the ﬂoor plan graph is fed into a GNN ...
 
 ---
 
+  
 
-
-
-
-
+  
 
 # Step 2. Vectore Store를 사용해 Document 데이터 => 벡터 데이터로 임베딩 하여 저장하기
 우리는 API를 통해 LLM 모델을 가져와 활용하고 있으나 우리가 가지고 있는 데이터에 대해선 LLM 모델은 알지 못한다. 우리가 가진 데이터를 기반으로 LM 모델에게서 원하는 답을 얻기 위해선 데이터를 학습 시키거나 프롬프트에서 알려줘야하는데 학습, 즉 우리의 데이터로 모델을 파인튜닝하기엔 현실적으로 불가능한 경우가 많다.
@@ -377,7 +375,7 @@ for doc_rank, (s, idx, doc) in enumerate(zip(map(get_relevance, scores), doc_ids
 
 
 
-다음 포스트에서 이어서 `Document` 텍스트를 고정된 크기의 청크로 분리해서 벡터 스토어에 넣는 방법, 그리고 나온 결과를 입력으로 LLM 모델을 통해 유저에게 자연어로 요약해 설명하는 Chain을 구성해 볼 예정이다.
+다음 포스트에선 이번 내용에 이어서 Text spliter 방법을 사용해 `Document` 텍스트를 적절한 크기의 청크로 분리해서 벡터 스토어에 넣는 방법, 그리고 나온 결과를 입력으로 LLM 모델을 통해 유저에게 자연어로 요약해 설명하는 Chain을 구성해 볼 예정이다.
 
 
 
