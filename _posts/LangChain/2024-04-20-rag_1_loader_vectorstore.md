@@ -10,10 +10,10 @@ tags: [LangChain, RAG]
 
 이를 위해 우리가 필요한 컴포넌트들은 다음과 같다.
 
-- PDF 로딩: 유저가 업로드하는 PDF를 읽어와 필요하다면 부분으로 나눈 뒤 각 부분들을 모델이 알아들을 수 있는 타입으로 변환하는 단계
-- 벡터 스토어 생성: 임베딩 벡터로 변환 & 벡터 스토어에 저장
-- Semantic search & Document 반환: 유저의 질문을 입력받아 의미적으로 유사하고 적절한 Document를 반환하는 단계
-- 답변 생성: 반환된 Document들을 context로 질문에 대한 적절한 답변 생성
+- PDF 로더: 유저가 업로드하는 PDF를 읽어와 필요하다면 부분으로 나눈 뒤 각 부분들을 모델이 알아들을 수 있는 타입으로 변환하는 단계
+- 벡터 스토어: 임베딩 벡터로 변환 & 벡터 스토어에 저장 => 임베딩 모델, 벡터 스토어 적용
+- Semantic search & Document 반환이 가능한 컴포넌트: 유저의 질문을 입력받아 의미적으로 유사하고 적절한 Document를 반환하는 단계 => 사용자 질문을 벡터로 바꿔주는 임베딩 모델과 바뀐 임베딩 벡터와 유사한 Document들을 찾아주는 리트리버 적용
+- 답변 생성기: 반환된 Document들을 context로 질문에 대한 적절한 답변 생성할 수 있는 모델 => 프롬프트 구성 & LM 적용
 
 
 
@@ -28,9 +28,13 @@ tags: [LangChain, RAG]
 
 
 
-# Step1.  LangChain의 Document Loader에 대해 알아보기
 
-### Document Class
+
+# Step1.  LangChain의 Document Loader
+
+우선 Langchain에서 제공하는 기본 Document 클래스의 구조에 대해 간단히 살펴본 후 다양한 포맷의 인풋 데이터들을 이 Document 형태로 변환해주는 Document loader에 대해 알아보자.
+
+## Document Class
 
 Document class는 `langchain_core.documents`에 위치한 클래스로 랭체인에서 다루는 문서(documents)에 대한 가장 기본적인 클래스이다. 이 문서는 당연하게도 텍스트들의 집합이며 그냥 텍스트만 있는 것이 아닌 메타 데이터를 같이 들고 있을 수 있다. 따라서 이 클래스는 크게 두가지 부분으로 나눠져있다.
 - metadata(optional): dict 데이터 타입으로 한 페이지에 대한 메타 데이터를 담고 있다. 예를 들면 출처, 문서 내 페이지 넘버, 다른 문서들과의 관계 등이다.
@@ -65,7 +69,7 @@ doc.page_content = "This paper presents a new framework to classify floor plan e
 
 
 
-### DocumentLoader
+## DocumentLoader
 
 그렇다면 위의 Document를 생성해보자. LangChain의 구성 라이브러리 중 하나인 langchain_community엔 `document_loaders`란 폴더가 있다. 여기엔 여러 가지 형태의 Document Loader들이 정의 돼있으며 문서의 타입이나 포맷에 따라 거기에 맞는 미리 구성된 loader들을 사용하면 된다. 
 
@@ -119,7 +123,7 @@ for idx, doc in enumerate(docs):
 
 
 
-### PDF파일 Loader
+## PDF파일 Loader
 
 앞서 말했듯이 document_loaders 에는 BaseLoader를 상속받아 구현된 다양한 문서의 타입이나 포맷에 따른 loader들이 구현돼있다. 그 중 PDF 파일에 대한 loader도 여러 가지 있다. `PyPDFLoader`는 pypdf를 사용해 PDF 파일을 `Document` 리스트로 바꿔준다. 페이지 단위로 chunk로 바꿔주며 페이지 숫자를 metadata로 넣어준다고 한다.
 
@@ -178,6 +182,8 @@ pixel line. Then, the ﬂoor plan graph is fed into a GNN ...
 
 
 
+
+
 # Step 2. Vectore Store를 사용해 Document 데이터 => 벡터 데이터로 임베딩 하여 저장하기
 우리는 API를 통해 LLM 모델을 가져와 활용하고 있으나 우리가 가지고 있는 데이터에 대해선 LLM 모델은 알지 못한다. 우리가 가진 데이터를 기반으로 LM 모델에게서 원하는 답을 얻기 위해선 데이터를 학습 시키거나 프롬프트에서 알려줘야하는데 학습, 즉 우리의 데이터로 모델을 파인튜닝하기엔 현실적으로 불가능한 경우가 많다.
 
@@ -189,7 +195,9 @@ pixel line. Then, the ﬂoor plan graph is fed into a GNN ...
 
 ![rag_simple_diagram](../../images/2024-04-20-rag_1_loader_vectorstore/rag_simple_diagram.jpg)
 
-### 벡터 스토어 생성 & 문서 임베딩
+
+
+## 벡터 스토어 생성 & 문서 임베딩
 
 Vector Store는 말 vector들을 담고 있는 저장소로 벡터 데이터 저장과 동반해 여러 관련 기능들을 포함한 클래스이다.
 
@@ -251,6 +259,8 @@ print(f"""
     easily ﬁnd the dominant features on unseen data, such as predicting whether it is spatial or
     non-spatial by looking at the area attribute.
     Table 1. Class-w, ...
+
+
 
 
 
