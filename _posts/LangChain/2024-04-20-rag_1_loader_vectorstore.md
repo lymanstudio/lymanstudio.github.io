@@ -136,7 +136,7 @@ for idx, doc in enumerate(docs):
 from langchain_community.document_loaders import PyPDFLoader
 
 pdf_loader = PyPDFLoader(
-    file_path = base_dir + "/data/document_loaders/paper.pdf",
+    file_path = data_dir + "/document_loaders/paper.pdf",
     extract_images = False
 )
 
@@ -175,6 +175,80 @@ pixel line. Then, the ﬂoor plan graph is fed into a GNN ...
 19. Hu, R.; Huang, Z.; Tang, Y.; van Kaick, O.; Zhang, ...
 ※ Metadata: page = 16
 ```
+
+한편  `PyPDFLoader`는 단순 전체 파일을 페이지 기반으로 나누며 메타 데이터도 `page`라는 이름의 페이지 숫자만 제공했던 것과 달리 `PyMuPDFLoader`는 PyMuPDF 라이브러리를 사용하며 메타 데이터 추출에 더욱 강점이 있다고 한다.
+
+```python
+from langchain_community.document_loaders import PyMuPDFLoader
+        
+pdf_loader = PyMuPDFLoader(
+    file_path = os.path.join(data_dir + "/document_loaders/paper.pdf"),
+    extract_images = False
+)
+
+docs = pdf_loader.load()
+
+check_docs(docs, show_len=100, meta_show_only_keys = True)
+```
+
+```
+▶︎ No. of Documents: 17 
+
+▶︎ Contents
+* Doc 0:  
+International Journal of
+Geo-Information
+Article
+Framework for Indoor Elements Classiﬁcation via I...
+※ Metadata: ['source', 'file_path', 'page', 'total_pages', 'format', 'title', 'author', 'subject', 'keywords', 'creator', 'producer', 'creationDate', 'modDate', 'trapped']
+
+* Doc 1: ISPRS Int. J. Geo-Inf. 2021, 10, 97
+2 of 17
+models may be essential for speciﬁc user purposes, such ...
+※ Metadata: ['source', 'file_path', 'page', 'total_pages', 'format', 'title', 'author', 'subject', 'keywords', 'creator', 'producer', 'creationDate', 'modDate', 'trapped']
+
+* Doc 2: ISPRS Int. J. Geo-Inf. 2021, 10, 97
+3 of 17
+objects, respectively, in ﬂoor plans with various drawin...
+※ Metadata: ['source', 'file_path', 'page', 'total_pages', 'format', 'title', 'author', 'subject', 'keywords', 'creator', 'producer', 'creationDate', 'modDate', 'trapped']
+
+* Doc 3: ISPRS Int. J. Geo-Inf. 2021, 10, 97
+4 of 17
+pixel line. Then, the ﬂoor plan graph is fed into a GNN ...
+※ Metadata: ['source', 'file_path', 'page', 'total_pages', 'format', 'title', 'author', 'subject', 'keywords', 'creator', 'producer', 'creationDate', 'modDate', 'trapped']
+
+* Doc 4: ISPRS Int. J. Geo-Inf. 2021, 10, 97
+5 of 17
+The detailed process is described as follows. A closed a...
+※ Metadata: ['source', 'file_path', 'page', 'total_pages', 'format', 'title', 'author', 'subject', 'keywords', 'creator', 'producer', 'creationDate', 'modDate', 'trapped']
+
+...
+
+* Doc 16: ISPRS Int. J. Geo-Inf. 2021, 10, 97
+17 of 17
+19.
+Hu, R.; Huang, Z.; Tang, Y.; van Kaick, O.; Zhang, ...
+※ Metadata: ['source', 'file_path', 'page', 'total_pages', 'format', 'title', 'author', 'subject', 'keywords', 'creator', 'producer', 'creationDate', 'modDate', 'trapped']
+```
+
+위 메타 데이터를 보면 subject 필드에 논문의 제목인 `title`과 초록(abstract)인 `subject`라는 필드를 가지고 있다. 이 정보는 문서의 메인 아이디어와 정체성, 요약본을 나타내기에 중요한 정보이므로 RAG 시스템을 구성하는데 유용하게 사용할 수 있다.
+
+
+```python
+paper_metadata = f"""
+Paper Title: {docs[0].metadata['title']}
+Paper Abstract : {docs[0].metadata['subject']}
+      """
+
+print(paper_metadata)
+```
+
+
+    Paper Title: Framework for Indoor Elements Classification via Inductive Learning on Floor Plan Graphs
+    Paper Abstract : This paper presents a new framework to classify floor plan elements and represent them in a vector format. Unlike existing approaches using image-based learning frameworks as the first step to segment the image pixels, we first convert the input floor plan image into vector data and utilize a graph neural network. Our framework consists of three steps. (1) image pre-processing and vectorization of the floor plan image; (2) region adjacency graph conversion; and (3) the graph neural network on converted floor plan graphs. Our approach is able to capture different types of indoor elements including basic elements, such as walls, doors, and symbols, as well as spatial elements, such as rooms and corridors. In addition, the proposed method can also detect element shapes. Experimental results show that our framework can classify indoor elements with an F1 score of 95%, with scale and rotation invariance. Furthermore, we propose a new graph neural network model that takes the distance between nodes into account, which is a valuable feature of spatial network data.
+
+
+​    
 
 ---
 
@@ -375,7 +449,7 @@ for doc_rank, (s, idx, doc) in enumerate(zip(map(get_relevance, scores), doc_ids
 
 
 
-다음 포스트에선 이번 내용에 이어서 Text spliter 방법을 사용해 `Document` 텍스트를 적절한 크기의 청크로 분리해서 벡터 스토어에 넣는 방법, 그리고 나온 결과를 입력으로 LLM 모델을 통해 유저에게 자연어로 요약해 설명하는 Chain을 구성해 볼 예정이다.
+다음 포스트에선 이번 내용에 이어서 LM 모델을 사용해 문서를 정제한 뒤 Text spliter 방법을 사용해 `Document` 텍스트를 적절한 크기의 청크로 분리해서 벡터 스토어에 넣는 방법을 알아볼 예정이다
 
 
 
