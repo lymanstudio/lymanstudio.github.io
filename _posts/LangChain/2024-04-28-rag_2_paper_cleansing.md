@@ -1,10 +1,10 @@
-```
+---
 layout: single
 title:  "RAG 실습 2. PDF파일과 대화하기(중: 언어모델을 사용한 Document 정제, 의미적으로 Chunking하기)"
 classes: wide
 categories: LangChain
 tags: [LangChain, RAG]
-```
+---
 
 [이전 포스트](https://lymanstudio.github.io/langchain/rag_1_loader_vectorstore/)에서 우리는 Document Loading부터 벡터 스토어 구성까지 전반적인 과정을 각 단계별 튜닝 없이 빠르게 훑어보았다. 하지만 중간에 문서를 정제하지도 않아 문서에 있는 텍스트를 그대로 사용했으며 한 페이지의 전체 내용이 하나의  Document에 들어가 차후 문서들을 검색에 사용하기에 용이하지도 않은 상태이다.
 
