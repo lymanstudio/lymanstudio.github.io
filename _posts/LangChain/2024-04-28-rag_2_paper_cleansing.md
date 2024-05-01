@@ -564,7 +564,17 @@ retriever.get_relevant_documents(query = 'What are the key features of DWGNN?')
      Document(page_content='Glimmer et al. proposed a model that integrates edge features into the message-passing process, but its generality limits its effectiveness. To bridge this gap, we introduce the Distance-Weighted Graph Neural Network (DWGNN), an inductive learning-based GNN model that enhances the representation of spatial networks by incorporating an edge feature mechanism in the message-passing process. DWGNN, based on GraphSAGE, uses the distance between nodes as a one-dimensional weight value that influences the aggregation and update processes. By assigning attention values based on relative distance from the target node, DWGNN enables more context-aware updates.'),
      Document(page_content='While Glimmer et al. proposed a model that integrates edge features into the message-passing process, its generality limits its effectiveness. To address this gap, we introduce the Distance-Weighted Graph Neural Network (DWGNN), an inductive learning-based GNN model that enhances spatial network representation by incorporating an edge feature mechanism in the message-passing process. Based on GraphSAGE, DWGNN uses the distance between nodes as a one-dimensional weight value to influence aggregation and update processes. By assigning attention values based on relative distance from the target node, DWGNN facilitates more context-aware updates.')]
 
+마지막으로 위 모델을 로컬 폴더에 저장해주자. 다음 포스트에서 구성 된 벡터 스토어만 불러와 최종 모델을 구성할 예정이다.
+
+```py
+vector_store.save_local(os.path.join(base_dir, 'models/vector_stores/pdf_rag_faiss_index'))
+```
+
+
+
 다음 포스트에선 이렇게 구성된 벡터 스토어를 활용해 사용자 입력에 대해 검색한 문서들을 컨텍스트로 주어 LLM 모델을 통해 결과를 도출하고 유저에게 자연어로 요약해 설명하는 Chain을 구성해 볼 예정이다.
+
+
 
 
 
