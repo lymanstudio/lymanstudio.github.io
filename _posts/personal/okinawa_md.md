@@ -1,3 +1,10 @@
+---
+layout: single
+title:  "오키나와 여행"
+classes: wide
+categories: personel
+tags: [travel]
+---
 ## 오키나와 지리/명소 및 교통
 
 ### 🌎 지리
