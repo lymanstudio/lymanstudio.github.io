@@ -1,6 +1,6 @@
 ---
 layout: single
-title:  "RAG 실습 2. PDF파일과 대화하기(중: 언어모델을 사용한 Document 정제, 의미적으로 Chunking하기)"
+title:  "RAG 실습 1: PDF파일과 대화하기 [중] 언어모델을 사용한 Document 정제, 의미적으로 Chunking하기)"
 classes: wide
 categories: LangChain
 tags: [LangChain, RAG]
