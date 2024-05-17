@@ -278,4 +278,4 @@ A Chain은 마지막 단계인 만큼 많은 정보를 입력으로 받는다. �
 - API key 체크 함수(is_api_key_valid)
 - 쿼리 생성 함수(query)
 
-결과는 Github Repo([🔗](https://github.com/lymanstudio/lymanstudio.github.io))에 올라가 있는 코드를 참고하면 된다.
+결과는 Github Repo([🔗](https://github.com/lymanstudio/thesis_qa_rag))에 올라가 있는 코드를 참고하면 된다.
