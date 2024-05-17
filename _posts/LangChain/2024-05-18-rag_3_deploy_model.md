@@ -6,7 +6,7 @@ categories: LangChain
 tags: [LangChain, RAG, Streamlit]
 ---
 
-[이전 포스트](https://lymanstudio.github.io/langchain/rag_1_loader_vectorstore/)에서 load된 Document들의 내용을 정제하기 위해 클렌징 체인을 구성하고 적용하여 그 결과를 의미론적으로 chunking하였다.  간단한 TextSpliter를 사용하기 보단 문장 사이의 유사도를 구해 그것을 기반으로 문장들의 부분 집합으로 나누어 의미론적으로 유사한 문장들을 묶어 하나의 Document로 구성하였다.
+[이전 포스트](https://lymanstudio.github.io/langchain/rag_2_paper_cleansing/)에서 load된 Document들의 내용을 정제하기 위해 클렌징 체인을 구성하고 적용하여 그 결과를 의미론적으로 chunking하였다.  간단한 TextSpliter를 사용하기 보단 문장 사이의 유사도를 구해 그것을 기반으로 문장들의 부분 집합으로 나누어 의미론적으로 유사한 문장들을 묶어 하나의 Document로 구성하였다.
 
 이번 포스트에선 앞선 포스트들에서 사용한 기능들과 기타 필요한 기능들을 합하여 하나의 완전한 시스템으로 구성하고 streamlit으로 웹 기반 앱을 만들어 배포까지 하는 과정을 소개할 예정이다.
 
