@@ -10,7 +10,7 @@ tags: [LangChain, RAG]
 
 
 
-이번 포스트에선 위의 내용들을 집중적으로 다뤄볼 것이다. 
+이번 포스트에선 아래의 내용들을 집중적으로 다뤄볼 것이다. 
 
 * 우선 첫번째로 load된 Document들을 정제하는 과정을 살펴보고 다시  Document로 구성한다. 이과정에서 간단한 LM을 사용할 것이다.
 
@@ -229,7 +229,7 @@ check_docs(result_docs)
     In the following sections, we discuss the limitations of previous research on floor plan analysis and propose our framework for indoor element classification using a graph neural network. We then present the results of our analysis on multiple datasets and discuss potential issues and areas for further research.
     
     Overall, our framework offers a comprehensive solution for indoor element classification and representation in vector format, addressing the challenges faced by traditional methods. By combining image pre-processing, graph analysis, and machine learning techniques, we achieve high accuracy in indoor element classification while preserving the original shapes and spatial features of indoor elements.
-
+    
     ▶︎ No. of Documents: 6 
     
     ▶︎ Contents
@@ -515,29 +515,33 @@ for doc_rank, (s, idx, doc) in enumerate(zip(map(get_relevance, scores), doc_ids
     - similiarity: 82.0%
     - docstore_id: f4959094-d2a5-434b-bf07-d5c7ab1673d0
     - page_content: The proposed framework involves preprocessing the raster floor plan image to obtain a binarized image for vectorization. Closed regions in the image are transformed into polygons post-vectorization, which are then converted into a region adjacency graph (RAG) based on their adjacent relationships. The RAG is utilized to train a GNN model, resulting in a set of polygons with different classes as the final output. The overview of this framework is depicted in Figure 1.
-        
-    
+
+
+​    
     - K: 1
     - index: 22
     - similiarity: 81.7%
     - docstore_id: fe6c0afb-e88e-47d6-94d5-35124b384454
     - page_content: It is important to buffer the polygons by the thickness of the pixel lines surrounding them to ensure that regions occupied by pixel lines are not included in the polygons. This buffering process is essential for maintaining adjacency relationships between polygons. Once the polygons are buffered, they are converted into a Region Adjacency Graph (RAG) in order to extract features. The RAG conversion process involves creating an empty graph and adding the centroid of each polygon as a node.
-        
-    
+
+
+​    
     - K: 2
     - index: 19
     - similiarity: 81.4%
     - docstore_id: f2f04b63-6ea7-4ee6-a47e-d07fddec7874
     - page_content: It is essential to buffer the polygons by the thickness of the pixel lines surrounding them to ensure that regions occupied by pixel lines are not included in the polygons. This buffering process is crucial for maintaining adjacency relationships between polygons, with the buffering distance parameter selected as half the thickness of the pixel line. The next stage involves converting the polygons into a Region Adjacency Graph (RAG) and extracting features. The RAG conversion process begins by creating an empty graph and adding the centroid of each polygon as a node. To determine the edges of the graph, each polygon intersects with other polygons in the set.
-        
-    
+
+
+​    
     - K: 3
     - index: 28
     - similiarity: 81.2%
     - docstore_id: 2967f351-6a66-4f47-972d-ceaa58c621bc
     - page_content: It is important to buffer the polygons by the thickness of the pixel lines surrounding them to ensure that regions occupied by pixel lines are not included in the polygons. This buffering process is essential for maintaining adjacency relationships between polygons. Once the polygons are buffered, they are converted into a Region Adjacency Graph (RAG) in order to extract features. The RAG conversion process involves creating an empty graph and adding the centroid of each polygon as a node. The edges of the graph are determined by the intersections of each polygon with others in the set. To optimize this process and reduce complexity, an STRtree spatial indexing algorithm is utilized, which significantly improves the efficiency of the conversion process.
-        
-    
+
+
+​    
     - K: 4
     - index: 23
     - similiarity: 76.6%
