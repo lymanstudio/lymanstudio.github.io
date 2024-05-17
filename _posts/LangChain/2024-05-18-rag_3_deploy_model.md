@@ -1,6 +1,6 @@
 ---
 layout: single
-title:  "RAG 실습 3. PDF파일과 대화하기(하: 최종 모델 구성 및 streamlit으로 배포하기)"
+title:  "RAG 실습 3. PDF파일과 대화하기(하: 최종 모델 구성 및 Streamlit으로 배포하기)"
 classes: wide
 categories: LangChain
 tags: [LangChain, RAG, Streamlit]
@@ -274,4 +274,4 @@ A Chain은 마지막 단계인 만큼 많은 정보를 입력으로 받는다. �
 - API key 체크 함수(is_api_key_valid)
 - 쿼리 생성 함수(query)
 
-결과는 Github Repo(🔗)에 올라가 있는 코드를 참고하면 된다.
+결과는 Github Repo([🔗](https://github.com/lymanstudio/lymanstudio.github.io))에 올라가 있는 코드를 참고하면 된다.
