@@ -221,7 +221,11 @@ A Chain은 마지막 단계인 만큼 많은 정보를 입력으로 받는다. �
 
 - 앞서 구성한 Q chain에서 생성된 질문:{`question`}, 언어:{`language`} 정보
 - 질문에 답변을 줄 수 있는 Document들로 구성된 CONTEXT:{`context`}
-- 답변에 도움을 줄 수 있는 메타 데이터(TITLE:{`title`}, ABSTRACT(초록):{`abstract`}, ADDITIONAL_INFO(기타 부가 정보):{`add_info`}
+- 답변에 도움을 줄 수 있는 메타 데이터들
+  - TITLE:{`title`}
+  - ABSTRACT(초록):{`abstract`}
+  - ADDITIONAL_INFO(기타 부가 정보):{`add_info`}
+
 
 출력은 마지막 답변이기에 단순한 스트링이다. 따라서 체인의 마지막 파서는 `StrOutputParser()`를 사용했다.
 
