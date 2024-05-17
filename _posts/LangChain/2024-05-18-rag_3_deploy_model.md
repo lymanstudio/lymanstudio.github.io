@@ -1,6 +1,6 @@
 ---
 layout: single
-title:  "RAG 실습 2. PDF파일과 대화하기(하: 최종 모델 구성 및 streamlit으로 배포하기)"
+title:  "RAG 실습 3. PDF파일과 대화하기(하: 최종 모델 구성 및 streamlit으로 배포하기)"
 classes: wide
 categories: LangChain
 tags: [LangChain, RAG, Streamlit]
@@ -240,7 +240,7 @@ A Chain은 마지막 단계인 만큼 많은 정보를 입력으로 받는다. �
 
 # Step 6. 코드 정리
 
-위에서 정의한 chain들을 포함하여 우리가 가진 함수/기능들을 용도에 따라 구분해보자.
+위에서 정의한 chain들을 포함하여 우리가 가진 함수/기능들을 용도에 따라 구분해 각자 파일로 구성해보자.
 
 ### RAG에 사용되는 체인들 => `rag_chains.py`
 
@@ -258,6 +258,11 @@ A Chain은 마지막 단계인 만큼 많은 정보를 입력으로 받는다. �
 - 문서 Chunking(chunk_paper)
 - Document 체킹(check_docs_str)
 
+### 벡터 스토어 생성, 로딩 관련 => `vectorstore.py`
+
+- 현재 논문에 대한 벡터 스토어가 기 구축된 경우 로딩(load_store)
+- 신규 벡터 스토어 생성(create_store)
+
 ### 로컬 저장 대상 => 각자 경로 생성
 
 - 데이터: 논문 PDF등
@@ -265,6 +270,8 @@ A Chain은 마지막 단계인 만큼 많은 정보를 입력으로 받는다. �
 
 ### 전체 실행 파일 => `main.py`
 
-- 시퀀스에 따른 실행 코드
+- Streamlit을 사용한 시퀀스에 따른 실행 코드
 - API key 체크 함수(is_api_key_valid)
 - 쿼리 생성 함수(query)
+
+결과는 Github Repo(🔗)에 올라가 있는 코드를 참고하면 된다.
