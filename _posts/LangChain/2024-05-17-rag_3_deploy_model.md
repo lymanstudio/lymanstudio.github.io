@@ -64,10 +64,10 @@ def paper_clean_chain():
 사용자는 자신이 업로드 한 논문에 대한 질문을 할 것이다. 하지만 이 질문은 모델에 들어가기 전 편집되야하는데 그 이유는 크게
 
 - 사람마다 질문 스타일은 매우 다를 수 있고 때에 따라선 간결하지 않고 필요 없는 말이 덧붙여져 있는 경우가 많다.
-- 우리의 논문은 (대부분) 영어로 구성돼있기에 질문도 간결하고 명확한 영어로 들어가야 한다.
+- 질문은 논문이 사용한 언어로 작성되는 것이 좋다. 논문의 메타 데이터를 참고하여 메타 데이터에 쓰여진 언어로 질문을 변환시켜줄 필요가 있다.
 - 사용자의 질문에 대한 답변은 질문에 사용된 언어로 구성돼야 한다.
 
-위의 이유로 사용자 자유분방한 질문을 영어로 쓰여진 깔끔한 질문으로 바꿔주며 원래 질문의 언어도 알려주는 체인을 Q(question) chain이라는 이름으로 구성했다.
+위의 이유로 사용자 자유분방한 질문을 논문이 사용한 언어로 쓰여진 깔끔한 질문으로 바꿔주며 원래 질문의 언어도 알려주는 체인을 Q(question) chain이라는 이름으로 구성했다.
 
 ```python
 def q_chain(llm) -> str:
@@ -242,9 +242,17 @@ A Chain은 마지막 단계인 만큼 많은 정보를 입력으로 받는다. �
 
 
 
-# Step 6. 코드 정리
+# Step 6. 전체 실행 순서 디자인 및 실행 파일 생성
 
-위에서 정의한 chain들을 포함하여 우리가 가진 함수/기능들을 용도에 따라 구분해 각자 파일로 구성해보자.
+앞선 여러 단계를 거쳐 구성한 시스템을 조립해 하나의 실행 코드로 만들어보자. 이를 위해 우선 앱 동작 시퀀스를 확정해야 한다.
+
+사용자의 시작 단계 부터  마지막 단계 까지 모든 흐름을 플로우 차트로 구성해보았다.
+
+<img src="./../../images/2024-05-17-rag_3_deploy_model/main_file_flowchart.png" alt="main_file_flowchart" style="zoom: 80%;" />
+
+막연히 생각한 순서는 꽤나 간단한 앱이라고 생각했지만 막상 모든 단계를 그려보니 조금은 복잡한 감이 있다.
+
+다음으로 흐름도를 기반으로 위에서 정의한 chain들을 포함하여 우리가 가진 함수/기능들을 용도에 따라 구분해 각자 파일로 구성해보자.
 
 ### RAG에 사용되는 체인들 => `rag_chains.py`
 
@@ -278,4 +286,155 @@ A Chain은 마지막 단계인 만큼 많은 정보를 입력으로 받는다. �
 - API key 체크 함수(is_api_key_valid)
 - 쿼리 생성 함수(query)
 
-결과는 Github Repo([🔗](https://github.com/lymanstudio/thesis_qa_rag))에 올라가 있는 코드를 참고하면 된다.
+>  각 파일별 실제 결과는 Github Repo([🔗](https://github.com/lymanstudio/thesis_qa_rag))에 올라가 있는 코드를 참고하면 된다.
+
+위 흐름도를 바탕으로 main_test.py 코드를 구성한 결과는 다음과 같다(chain 생성, 기타 부가 기능, 벡터 스토어 관련 기능은 위에서 정리한 것과 같이 따로 python 파일로 정리한 상태).
+
+```python
+import os
+import openai
+import argparse
+
+from utils import *
+from vectorstore import *
+from rag_chains import *
+from langchain_openai import OpenAIEmbeddings
+
+def is_api_key_valid(api_key):
+    try:
+        client = openai.OpenAI(api_key=api_key)
+        client.embeddings.create(input = ["Hello"], model="text-embedding-3-small")
+    except:
+        return False
+    else:
+        return True
+
+def query(q_chain, reference, q: str, params : dict = None):
+    question = q_chain.invoke(
+        {
+            "context": reference,
+            "question": q  
+        }
+    )
+    
+    if params is None:
+        params = {
+            "title": "title",
+            "abstract": "subject",
+            "add_info": ['title', 'subject'],
+        } 
+    print(question)
+    return {
+        "title": params["title"],
+        "abstract": params["abstract"],
+        "add_info": params["add_info"],
+        "context": question["processed_query"],
+        "question": question["processed_query"],
+        "language": question["language"]
+    }
+
+def main(q):
+
+    file_name = "framework_for_indoor_elements_classification_via_inductive_learning_on_floor_plan_graphs.pdf"
+    loaded_pdf = load_pdf_local(file_name = file_name)
+    thesis_name = file_name.split('.')[0]
+    vectorstore_path = os.path.join("./", "model/vectorstore/", thesis_name + "_index")
+
+    if os.path.exists(vectorstore_path) == False:
+        print("▶ Constructing a new vector store for the uploaded paper.")
+        print("\t* Cleaning the paper...")
+
+        cleaned_paper, cleaned_paper_concat = clean_paper(loaded_pdf, chain = paper_clean_chain())
+        
+        print("\t* Chunking pages into sets of relevant sentences...")
+        chunked_docs = chunk_paper(cleaned_paper)
+
+        print("\t* Creating a new vector store...")
+        vs = create_store(
+            chunked_docs, 
+            embedding_model= OpenAIEmbeddings(), 
+            vdb= 'faiss', 
+            save_store = True, 
+            save_path = vectorstore_path
+        )
+        
+    else:
+        print("▶ Pre-constructed vector store exitsts! Load it from the local directory.")
+        vs = load_store(
+            embedding_model=OpenAIEmbeddings(),
+            load_path= vectorstore_path
+        )
+
+    print("▶ Setting up QA bot...")
+    # Set Up retriever out of vector store
+    retriever = vs.as_retriever(search_type = "mmr", search_kwargs = {"k": 10})
+
+    # Make a QA Chains
+    ## Q chain
+    meta_data_dict = "\n".join(f"{k} : {v}" for k, v in next(iter(vs.docstore._dict.values())).metadata.items())
+    query_chain = q_chain(llm = ChatOpenAI(model = 'gpt-3.5-turbo'))
+
+    ## A chain
+    paper_qa_chain = a_chain(
+        vector_store = vs,
+        retriever = retriever,
+        llm = ChatOpenAI(model = 'gpt-3.5-turbo')
+    )
+
+    answer = paper_qa_chain.invoke(
+        query(
+            query_chain,
+            reference = meta_data_dict,
+            q = q
+        )
+    )
+    
+    print(answer)
+    return True
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description='options')
+    parser.add_argument('--q', help='query')
+    parser.add_argument('--key', help='API key')
+    args = parser.parse_args()
+
+    key_status = is_api_key_valid(args.key)
+    print("▶ API Key status : {}".format("Good to go." if key_status else "Invaild or missing API key."))
+    if key_status:
+        os.environ['OPENAI_API_KEY'] = args.key
+        main(args.q)
+    else:
+        print("exit")
+```
+
+위 파일을 커맨드라인으로 아래와 같이 실행하면
+
+```tex
+ python main_test.py --key {Your OPENAI_API_KEY} --q 既存の論文との違いは何？ (파파고 번역)기존 논문과의 차이점은 뭐야?
+```
+
+다음과 같이 출력된다.
+```
+▶ API Key status : Good to go.
+▶ Pre-constructed vector store exitsts! Load it from the local directory.
+▶ Setting up QA bot...
+{'processed_query': 'What is the difference from existing papers?', 'language': 'Japanese'}
+既存のアプローチとの違いは、この論文が最初に入力される間取り図像をベクトルデータに変換し、グラフニューラルネットワークを活用するという点です。従来のアプローチでは、最初に画像ピクセルをセグメント化するための画像ベースの学習フレームワークが使用されていましたが、本論文では異なります。このフレームワークは、画像の前処理と間取り図像のベクトル化、隣接領域グラフへの変換、変換された間取り図グラフ上のグラフニューラルネットワークの3つのステップで構成されています。これにより、壁、ドア、シンボルなどの基本要素だけでなく、部屋や廊下など の空間要素もキャプチャできるようになりました。また、提案された方法は要素の形状も検出できます。その結果、95%のF1スコアで室内要素を分類できることが実験結果から示されています。その他にも、ノード間の距離を考慮に入れた新しいグラフニューラルネットワークモデルが提案され ており、これは空間ネットワークデータの貴重な特徴です。
+
+(파파고 번역)
+기존 접근 방식과의 차이점은 이 논문이 처음 입력되는 방 배치 도상을 벡터 데이터로 변환하고 그래프 신경망을 활용한다는 점입니다.종래의 접근법에서는, 처음에 화상 픽셀을 세그먼트화하기 위한 화상 베이스의 학습 프레임워크가 사용되고 있었지만, 본 논문에서는 다릅니다.이 프레임워크는 이미지 전처리와 방 배치 도상의 벡터화, 인접 영역 그래프로의 변환, 변환된 방 배치도 그래프 상의 그래프 신경망의 세 단계로 구성되어 있습니다.이를 통해 벽, 문, 상징물 등 기본 요소뿐만 아니라 방이나 복도 등 의 공간 요소도 캡처할 수 있게 되었습니다.또한 제안된 방법은 요소의 형상도 검출할 수 있습니다.그 결과 95%의 F1 점수로 실내 요소를 분류할 수 있음이 실험 결과에서 나타났습니다.이외에도 노드 간 거리를 고려한 새로운 그래프 신경망 모델이 제안되며 있으며, 이는 공간 네트워크 데이터의 귀중한 특징입니다.
+```
+
+결과를 보니 일어로 질문한 쿼리가 논문이 쓰여진 언어인 영어로 번역된 질문으로 변환됐고 결과는 다시 일어로 변환돼 생성된 것을 확인할 수 있다. 또한 막연한 질문임에도 답변의 길이와 내용이 일반적으로 유용한 정보를 담고 있었다.
+
+마지막으로 위 코드를 streamlit으로 wrapping 하여 main 파일을 만들 수 있다.  streamlit으로 wrapping하는 과정은 streamlit소개와 함께 따로 포스트로 구성할 예정이다. 최종 결과 main.py는 [여기](https://github.com/lymanstudio/thesis_qa_rag/blob/main/main.py)에 있다.
+
+
+
+# 결과 및 시연
+
+streamlit을 통해 웹 어플리케이션을 만들고 deploy하면 실제로 배포가 진행된다. 저장소는 개발자가 구성한 github repo와 연결돼있으며 퍼블릭 상태여야 한다고 한다.
+
+최종 결과는 아래와 같다.
+
+![demonstration](./../../images/2024-05-17-rag_3_deploy_model/demonstration.gif)
