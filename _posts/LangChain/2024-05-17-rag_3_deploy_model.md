@@ -2,7 +2,7 @@
 layout: single
 title:  "RAG 실습 1: PDF파일과 대화하기 [하] 최종 모델 구성 및 Streamlit으로 배포하기)"
 classes: wide
-categories: LangChain
+categories: RAG
 tags: [LangChain, RAG, Streamlit]
 ---
 

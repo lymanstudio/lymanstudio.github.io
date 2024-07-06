@@ -2,7 +2,7 @@
 layout: single
 title:  "RAG 실습 1: PDF파일과 대화하기 [상] Document Loading/Vector Store 구성 및 검색"
 classes: wide
-categories: LangChain
+categories: RAG
 tags: [LangChain, RAG]
 ---
 
