@@ -108,6 +108,7 @@ author:
   avatar           : "./images/permduck_dancing.jpeg"
   bio              : "Data Analyst, LM Application Developer"
   email            : "linpoche27@gmail.com"
+  github           : "https://github.com/lymanstudio"
   links:
     - label: "Email"
       icon: "fas fa-fw fa-envelope-square"
@@ -123,7 +124,7 @@ author:
       # url: "https://facebook.com/"
     - label: "GitHub"
       icon: "fab fa-fw fa-github"
-      # url: "https://github.com/"
+      url: "https://github.com/"
     - label: "Instagram"
       icon: "fab fa-fw fa-instagram"
       # url: "https://instagram.com/"
