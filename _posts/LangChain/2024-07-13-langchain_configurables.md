@@ -224,8 +224,6 @@ llm = (
 )
 ```
 
-<br>
-
 ### configurable_alternatives: LLM 모델 선택
 
 이번엔 먼저 베이스 모델을 클로드의 `claude-3.5-sonnet-20240620`모델을 사용해 생성한다.
@@ -237,13 +235,11 @@ llm = (
 - 예를 들어 `{"llm": "gpt4o"}`으로 불러 gpt-4o모델을 사용하고 싶으면 `gpt4o = ChatOpenAI(model = 'gpt-40')`와 같이 붙여주면 된다.
 - 위 예시에선 `claude3_haiku=ChatAnthropic(model_name='claude-3-haiku-20240307')`, `gpt3_5 = ChatOpenAI(model = 'gpt-3.5-turbo')`도 더 추가해주어 총 4개의 모델을 고를 수 있는 상태가 됐다.
 
-<br>
-
 ### configurable_fields: LLM 모델 설정 변경
 
 `configurable_fields`를 사용해 설정 값도 바꿀 수 있다. ChatGPT와 Claude 두 모델군 모두 temparature값과 max_tokens 값을 모델 객체 생성 시 설정할 수 있으므로 configurable_fields 세팅을 통해 설정 변경 목록에 넣어주어 바꾸어 쓰고 싶을 때 변경하여 사용할 수 있다.
 
-
+<br>
 
 ### 사용법
 
