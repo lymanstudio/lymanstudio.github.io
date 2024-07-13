@@ -1,6 +1,6 @@
 ---
 layout: single
-title:  "LangChain의 Configurables을 통한 LLM 모델 쉽게 바꿔 비교/사용해보기"
+title:  "LangChain의 Configurables을 통한 LLM 모델 쉽게 바꿔 사용/비교해보기"
 classes: wide
 categories: LangChain
 tags: [LangChain, Configurables]
