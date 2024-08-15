@@ -4,6 +4,7 @@ title: "LangChain의 VectorStore, Retriever의 로직 동작 설명, 코드 분�
 classes: wide
 categories: LangChain
 tags: [LangChain, RAG, VectorStore]
+use_math: true
 ---
 
 ## 데이터 Ingestion flow Overview
@@ -173,9 +174,9 @@ $
 
 ## 리트리버(Retrievers)
 
-리트리버(반환기)는 말 그대로 Document 들을 반환하는 기능을 하는 컴포넌트이다. 주어진 자연어(혹은 다른 타입의 비정형 데이터)로 구성된 쿼리로 부터 연관된(relevant) Document들을 미리 정해진 파라미터에 따라 내어주는 기능을 주로 수행한다.
+리트리버(반환기)는 말 그대로 `Document` 들을 반환하는 기능을 하는 컴포넌트이다. 주어진 자연어(혹은 다른 타입의 비정형 데이터)로 구성된 쿼리로 부터 연관된(relevant) `Document`들을 미리 정해진 파라미터에 따라 내어주는 기능을 주로 수행한다.
 
-벡터 스토어와 달리 Document들의 임베딩 벡터를 직접 저장해놓지 않으며 그저 반환만 하며 따라서 특정 벡터 스토어를 Backbone으로 사용하는 경우가 많다. 하지만 꼭 특정 벡터 스토어를 기반으로 구축/작동될 필요는 없다. 예를 들어 Ensemble Retriever는 특정 벡터 스토어를 기반으로 작동하는 것이 아닌 복수 개의 다른 Retriever 객체를 받아 혼합한 결과를 반환한다.
+벡터 스토어와 달리 `Document`들의 임베딩 벡터를 직접 저장해놓지 않으며 그저 반환만 하며 따라서 특정 벡터 스토어를 Backbone으로 사용하는 경우가 많다. 하지만 꼭 특정 벡터 스토어를 기반으로 구축/작동될 필요는 없다. 예를 들어 Ensemble Retriever는 특정 벡터 스토어를 기반으로 작동하는 것이 아닌 복수 개의 다른 Retriever 객체를 받아 혼합한 결과를 반환한다.
 
 #### 기본 사용법
 
