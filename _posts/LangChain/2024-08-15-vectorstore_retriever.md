@@ -113,18 +113,34 @@ def from_texts(
 
 - `similarity_search`: 가장 기본적인 시멘틱 서치 함수이다. 인자로 자연어 질문인 `query`와 반환하는 문서의 수인 `k`를 받는다. 추상 메서드(`@abstractmethod`)이기에 하위 클래스에서 필수로 override하여 사용해야 한다. `k`개의 Document의 리스트를 반환한다.
     ```py 
-        @abstractmethod
-        def similarity_search(self, query: str, k: int = 4, **kwargs: Any) -> List[Document]:
+    @abstractmethod
+    def similarity_search(self, query: str, k: int = 4, **kwargs: Any) -> List[Document]:
     ```
 
 - `similarity_search_with_score`: `similarity_search`에서 스코어를 추가하여 반환하는 메서드이다. 따라서 리턴 타입이 `List[Tuple[Document, float]]`이다. 또한 argument를 자유롭게 받을 수 있다. 역시 `raise NotImplementedError`로 하위 클래스에서 override해야 사용 가능하다.
     ```py 
-        def similarity_search_with_score(self, *args: Any, **kwargs: Any) -> List[Tuple[Document, float]]:
-             raise NotImplementedError
+    def similarity_search_with_score(self, *args: Any, **kwargs: Any) -> List[Tuple[Document, float]]:
+        raise NotImplementedError
     ```
 
     > 참고로  `@abstractmethod`와 `NotImplementedError`의 차이는 ABC 모듈을 사용하는지 안하는지의 차이인데, `@abstractmethod`는 해당 메서드를 하위 클래스에서 override하지 않으면 import 자체가 안되며 이와 달리 `NotImplementedError`는 하위 클래스에서 해당 메서드를 호출할 때 override 되지 않으면 에러가 발생하는 것이다. 즉 하위 클래스에서 메서드별 필수 override 대상인지 아닌지의 차이이다.
 
+- `similarity_search_with_relevance_scores`: [0,1] 사이의 연관 스코어와 함께 `Document`들을 반환한다. 이 메서드 자체는 껍데기이며 `_similarity_search_with_relevance_scores`를 통해 로직이 구현된다. 이 메서드에선 `score_threshold`인자를 kwargs에 줘서 threshold가 일정 이상인 similarity를 가진 `Document`들만 각자의 스코어와 함께 반환해주는 것이다.
+    ```py
+    def similarity_search_with_relevance_scores(self,
+        query: str,k: int = 4,**kwargs: Any,) -> List[Tuple[Document, float]]:
+        
+        (... kwargs:score_threshold 사이에 들어가는 score를 가진 Document들만 거르는 로직...)
+
+        return docs_and_similarities
+    ```
+- `_similarity_search_with_relevance_scores`: 
+
+    ```py
+    def similarity_search_with_relevance_scores(self,
+        query: str,k: int = 4,**kwargs: Any,) -> List[Tuple[Document, float]]:
+        
+    ```
 
 
 <br>
