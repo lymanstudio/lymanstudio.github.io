@@ -105,12 +105,15 @@ def from_texts(
 
 이러한 의미적 유사도를 통해 검색하는 기능을 시멘틱 검색이라고 하며 벡터스토어에선 가장 주된 기능 중 하나로 다양한 유사도 계산법에 따른 다양한 검색 메서드를 제공한다.
 
+![vectorStore_searchmethod_structure.drawio](./../../images/2024-08-15-vectorstore_retriever/vectorStore_searchmethod_structure.drawio.png)
+
 - `search`: 이함수는 단순히 `search_type`에 따라 아래 함수들을 분기하여 실행하는 인스턴스 메서드로 override 대상이 아니다. `search_type` 파라미터에 따라 다음 함수를 실행한다.
+    
     - similarity: `similarity_search`
     - similarity_score_threshold: `similarity_search_with_relevance_scores`
     - mmr: `max_marginal_relevance_search`
     - else: ValueError 리턴
-
+    
 - `similarity_search`: 가장 기본적인 시멘틱 서치 함수이다. 인자로 자연어 질문인 `query`와 반환하는 문서의 수인 `k`를 받는다. 추상 메서드(`@abstractmethod`)이기에 하위 클래스에서 필수로 override하여 사용해야 한다. `k`개의 Document의 리스트를 반환한다.
     ```py 
     @abstractmethod
@@ -131,7 +134,7 @@ def from_texts(
         query: str,k: int = 4,**kwargs: Any,) -> List[Tuple[Document, float]]:
         
         (... kwargs:score_threshold 사이에 들어가는 score를 가진 Document들만 거르는 로직...)
-
+    
         return docs_and_similarities
     ```
 - `_similarity_search_with_relevance_scores`: 
@@ -139,9 +142,7 @@ def from_texts(
     ```py
     def similarity_search_with_relevance_scores(self,
         query: str,k: int = 4,**kwargs: Any,) -> List[Tuple[Document, float]]:
-        
     ```
-
 
 <br>
 
