@@ -20,7 +20,7 @@ tags: [LangChain, RAG, VectorStore]
 
 ![Diagram illustrating the process of vector stores: 1. Load source data, 2. Query vector store, 3. Retrieve &#39;most similar&#39; results.](https://python.langchain.com/v0.1/assets/images/vector_stores-125d1675d58cfb46ce9054c9019fea72.jpg)
 
-<p style="text-align: center; color: gray;">사진 출처:   <A href = "https://python.langchain.com/v0.1/docs/modules/data_connection/vectorstores/" target = "링크 방법" > LangChain: Vector Stores</p>
+<div style="text-align: center; color: gray;">그림 출처: <a href="https://python.langchain.com/v0.1/docs/modules/data_connection/vectorstores/">LangChain: Vector Stores</a> </div>
 
 #### 임베딩 벡터
 
