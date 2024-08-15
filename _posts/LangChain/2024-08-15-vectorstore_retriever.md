@@ -8,9 +8,9 @@ use_math: true
 toc: true
 ---
 
-## 데이터 Ingestion flow Overview
+## RAG flow Overview
 
-텍스트 소스=> Loader => List[Document] => 
+![vector_store_search.drawio](./../../images/2024-08-15-vectorstore_retriever/vector_store_search.drawio.png)
 
 
 
@@ -110,7 +110,7 @@ def from_texts(
 ![vectorStore_searchmethod_structure.drawio](./../../images/2024-08-15-vectorstore_retriever/vectorStore_searchmethod_structure.drawio.png)
 
 - `search`: 이함수는 단순히 `search_type`에 따라 아래 함수들을 분기하여 실행하는 인스턴스 메서드로 override 대상이 아니다. `search_type` 파라미터에 따라 다음 함수를 실행한다.
-    
+  
     - similarity: `similarity_search`
     - similarity_score_threshold: `similarity_search_with_relevance_scores`
     - mmr: `max_marginal_relevance_search`
