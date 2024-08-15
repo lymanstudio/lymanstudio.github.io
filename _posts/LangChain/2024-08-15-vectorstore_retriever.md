@@ -165,9 +165,10 @@ $
     - `_max_inner_product_relevance_score_fn` : 설명 생략
 - `max_marginal_relevance_search`: MMR 알고리즘을 적용하여 문서들을 반환하는 방식이다. 다른 메서드들과 달리 `fetch_k`와 `lambda_mult`라는 인자가 추가된다.
     - MMR(Maximal Marginal Relevance) 알고리즘은 문서들 사이의 거리(margin)를 최대로 하는 알고리즘 이라는 뜻으로 우선 대량으로 문서를 뽑은 뒤에 문서들 사이의 연관성을 다시 계산하여 다양한 문서들을 최종적으로 뽑고자 하는 방식이다. 식은 아래와 같다. `fetch_k`수 만큼의 각 문서 $d_i$에 대해 수행한다.
-    $$
+    
+    - $
     \text{MMR}(d_i) = \lambda \cdot \text{Rel}(d_i, q) - (1 - \lambda) \cdot \max_{d_j \in S} \text{Sim}(d_i, d_j)
-    $$
+    $
     - 뽑힌 전체 문서들 중 가장 연관성이 높은 첫 문서($d_1$)은 바로 문서 집합 $S$에 넣고 이후, 각 단계에서 아직 선택되지 않은 문서들 중에서 MMR 점수가 가장 높은 문서를 선택한다. 이때, 새롭게 선택될 문서는 쿼리와의 관련성뿐만 아니라 이미 선택된 문서들과의 유사성을 동시에 고려합니다. 이는 람다 값으로 비중으로 조절한다. 이 과정을 문서 집합의 수가 `k`개가 될 때까지 반복한다.
 - `similarity_search_by_vector`, `max_marginal_relevance_search_by_vector`: 앞서 봤던 `similarity_search`와 `max_marginal_relevance_search`를 쿼리에 대한 게 아닌 임베딩 벡터에 대해 수행한다. 입력 인자의 형태만 바뀔 뿐 동작은 같다.
 <br>
