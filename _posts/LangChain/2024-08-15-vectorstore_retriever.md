@@ -321,7 +321,7 @@ def _get_relevant_documents(
 
 예를 들어 FAISS 벡터스토어의 리트리버를 기반으로 문서를 반환하되 BM25 리트리버도 같이 사용하고 싶고 두 리트리버의 가중치를 지정해 사용하고 싶은 경우 각 리트리버 객체를 만든 뒤 앙상블 리트리버에 넣어주면 된다.
 
-앙상블 리트리버는 클래스 변수에 여러 리트리버들을 리스트로 가지고 있으며 리트리버들의 `_get_relevant_documents` 메서드의 결과들은 [Reciprocal Rank Fusion(RRF)](chrome-extension://efaidnbmnnnibpcajpcglclefindmkaj/https://plg.uwaterloo.ca/~gvcormac/cormacksigir09-rrf.pdf) 알고리즘에 의해 혼합되어 마지막 결과를 내어 반환된다. 
+앙상블 리트리버는 클래스 변수에 여러 리트리버들을 리스트로 가지고 있으며 리트리버들의 `_get_relevant_documents` 메서드의 결과들은 [Reciprocal Rank Fusion(RRF)](https://plg.uwaterloo.ca/~gvcormac/cormacksigir09-rrf.pdf) 알고리즘에 의해 혼합되어 마지막 결과를 내어 반환된다. 
 
 인스턴스 변수는 `retrievers: List[RetrieverLike]`, `weights: List[float]`, `c: int = 60`가 있는데 각 리트리버마다 `weight` 값을 줘서($0<= weight <= 1$) 가중 비율을 결정해줘야 하며, 명시적으로 주지 않을 경우 디폴트로 각 리트리버에 균등하게 분배해준다. `c`는 RRF 스코어 계산을 위한 상수로 60으로 고정하는 듯 하다.
 
@@ -336,7 +336,7 @@ def _get_relevant_documents(
     return fused_documents
 ```
 
-중요한 것은 rank_fusion 메서드인데, 다음과 같다. 
+중요한 것은 `rank_fusion` 메서드인데, RRF 스코어를 구하고 최종 결과를 반환하는 `weighted_reciprocal_rank` 메서드와 같이 봐야한다. 두 메서드의 내용은 다음과 같다. 
 
 ```py
 def rank_fusion(self, query: str, ...) -> List[Document]:
@@ -384,6 +384,9 @@ def weighted_reciprocal_rank(self, doc_lists: List[List[Document]]) -> List[Docu
     )
     return sorted_docs
 ```
-`weighted_reciprocal_rank`메서드를 보면 모든 리트리버에서 나온 모든 `Document` 들이 각자가 속한 `doc_list` 내에서의 순위 값과 `doc_list`에 부여된 `weight` 값에 따라 RRF 스코어를 부여받는다. 이 때 다른 `doc_list`에서 나타난 문서가 이전에 이미 있던 문서라면 RRF 값은 누적되어 쌓인다.
+`weighted_reciprocal_rank`메서드를 보면 모든 리트리버에서 나온 모든 `Document` 들이 각자가 속한 `doc_list` 내에서의 순위 값과 `doc_list`에 부여된 `weight` 값에 따라 RRF 스코어를 부여받는다. 
+($RRFscore(d \in D) = w * \sum \frac{1}{k + rank(d)}$)
+
+이 때 다른 `doc_list`에서 나타난 문서가 이전에 이미 있던 문서라면 RRF 값은 누적되어 쌓인다.
 
 마지막으로 유니크한 Document들은 RRF 스코어를 기준으로 내림차순 정렬되어 반환되는 것이다.
