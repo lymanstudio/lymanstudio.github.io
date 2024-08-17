@@ -7,12 +7,24 @@ tags: [LangChain, RAG, VectorStore]
 use_math: true
 toc: true
 ---
+RAG는 여러 가지 구성요소를 가지고 있으나 그 중 가장 중요한 것을 뽑으라면 임베딩 모델, LM과 더불어 벡터 스토어(또는 벡터 DB)라고 말할 사람들이 많을 것이다. 사용자의 데이터들을 `Document` 형태와 페어링을 이루는 임베딩 벡터로 변환해 저장해 놓고 유저가 던지는 쿼리와 가장 유사한 `Document`를 찾아 반환하는 기능까지 수행하기에 RAG의 핵심 기능이라고 말할 수 있다.
+
+벡터 스토어와 리트리버의 개념, 활용법에 대한 설명은 차고 넘치나 커스텀 벡터스토어, 또는 리트리버를 만드려면 어떻게 구현됐는지 알아보는 게 필요하다. 이 포스트에선 벡터 스토어(VectorStore)와 리트리버(Retriever)에 대해 간단히 살펴보고 LangChain 프레임워크 내에서 기본 베이스 클래스가 어떻게 구성되어 있는지 알아본 후에 그걸 활용한 몇가지 실제 클래스까지 알아본다. 이 포스트가 커스텀 벡터스토어, 또는 리트리버 구축에 가이드 역할을 해줄 수 있기를 바란다.
 
 # RAG flow Overview
 
 ![vector_store_search.drawio](./../../images/2024-08-15-vectorstore_retriever/vector_store_search.drawio.png)
+<div style="text-align: center; color: gray;"> RAG의 전반적인 흐름과 구성요소들 </div>
 
+<br>
 
+우선 RAG의 흐름을 한번 더 집고 넘어가보자(LangChain 시스템 기준). RAG 시스템은 우선 데이터 소스에서 나온 데이터를 그 특성에 따라 Loader를 통해 여러 개의 `Document` 객체로 변환한다. 이렇게 구축된 `Document`들은 벡터 스토어에서 미리 정해진 임베딩 모델에 의해 임베딩 벡터로 변환, 저장된다.
+
+이제 사용자는 RAG에게 관련된 질문을 날린다. 이 질문은 같은 임베딩 모델에 의해 임베딩 벡터로 변환되며 미리 구축한 벡터스토어를 기반으로 생성된 리트리버는 해당 질문의 임베딩 벡터와 가장 유사한 임베딩 벡터를 가진 `Document`들을 벡터스토어의 시멘틱 검색을 통해 찾아내어 가장 유사한 순서대로 `k`의 `Document`를 반환한다.
+
+이후 LLM 모델은 반환된 사용자의 질문과 함께 `Document`를 context 정보로 삼아 답변을 구축하고 사용자에게 전달한다.
+
+위 과정에서 앞서 서두에서 말한 대로 벡터스토어와 리트리버의 역할은 매우 중요하며 데이터의 형태에 따라 다양한 벡터스토어, 리트리버를 사용해야할 것이다. 
 
 <br>
 
@@ -91,11 +103,11 @@ def from_texts(
 
 ###  Document 추가/삭제
 
-기 구성된 vectorStore에 Document를 추가할 수 있다. `from_documents`, `from_texts`의 관계와 마찬가지로 `add_documents`와 `add_texts`가 비슷한 구조로 구현돼있다. `from_documents` 에 추가되는 `List[Document]`를 인자로 주고 page_content와 메타 데이터를 뽑아 따로 리스트로 만들고 두 리스트를 인자로 하여`self.add_texts` 를 호출해 넣어준다. `self.add_texts`는 하위 클래스에서 정의돼야 사용 가능하다. (`raise NotImplementedError("delete method must be implemented by subclass.")`)
+기 구성된 vectorStore에 Document를 추가할 수 있다. `from_documents`, `from_texts`의 관계와 마찬가지로 `add_documents`와 `add_texts`가 비슷한 구조로 구현돼있다. `from_documents` 에 추가되는 `List[Document]`를 인자로 주고 page_content와 메타 데이터를 뽑아 따로 리스트로 만들고 두 리스트를 인자로 하여`self.add_texts` 를 호출해 넣어준다. `self.add_texts`는 하위 클래스에서 정의돼야 사용 가능하다. (`NotImplementedError`)
 
 삭제 또한 `delete` 메서드로 가능하며 하위 클래스에서 정의된다. 보통은 아래 검색에서 설명할 document_id로 삭제시킨다.
 
-### Document 검색
+### Document 검색   
 
 #### id로 검색
 
@@ -105,13 +117,16 @@ def from_texts(
 
 #### 시멘틱 검색
 
-시멘틱 검색, 즉 의미적으로 검색할 수 있는 기능은 벡터 스토어나 벡터 DB를 사용하는 가장 주된 이유일 것이다. 일반적인 검색이 단순히 단어들 간의 매칭이라면 시멘틱 검색은 벡터 스페이스 내에 존재하는 임베딩 벡터사이의 거리 또는 각도를 기반으로 한 유사도를 통한 검색을 의미한다. 
+시멘틱 검색, 즉 의미적으로 검색할 수 있는 기능의 존재는 벡터 스토어나 벡터 DB를 사람들이 사용하는 가장 주된 이유일 것이다. 일반적인 검색이 단순히 단어들 간의 매칭이라면 시멘틱 검색은 벡터 스페이스 내에 존재하는 임베딩 벡터사이의 거리 또는 각도를 기반으로 한 유사도를 통한 검색을 의미한다. 
 
 가령 `앨범` 이라는 단어와 `음반`이라는 단어는 스트링 자체로 보면 아무 연관이 없지만 그 의미적으론 상당히 유사하다는 것을 우리는 알 수 있다. 잘 훈련된 임베딩 모델을 통해 두 단어를 임베딩 벡터로 표현하면 두 벡터는 상당히 유사한 값으로 구성될 것이며 특정 차원의 공간에서 거리적으로나 각도적으로 유사하게 나타난다.
 
 이러한 의미적 유사도를 통해 검색하는 기능을 시멘틱 검색이라고 하며 벡터스토어에선 가장 주된 기능 중 하나로 다양한 유사도 계산법에 따른 다양한 검색 메서드를 제공한다.
 
 ![vectorStore_searchmethod_structure.drawio](./../../images/2024-08-15-vectorstore_retriever/vectorStore_searchmethod_structure.drawio.png)
+<div style="text-align: center; color: gray;"> 클래스 다이어그램으로 정리된 vectorStore 내 메서드들 관계도 </div>
+
+<br>
 
 - `search`: 이함수는 단순히 `search_type`에 따라 아래 함수들을 분기하여 실행하는 인스턴스 메서드로 override 대상이 아니다. `search_type` 파라미터에 따라 다음 함수를 실행한다.
   
@@ -172,12 +187,14 @@ def from_texts(
     - 뽑힌 전체 문서들 중 가장 연관성이 높은 첫 문서($d_1$)은 바로 문서 집합 $S$에 넣고 이후, 각 단계에서 아직 선택되지 않은 문서들 중에서 MMR 점수가 가장 높은 문서를 선택한다. 이때, 새롭게 선택될 문서는 쿼리와의 관련성뿐만 아니라 이미 선택된 문서들과의 유사성을 동시에 고려합니다. 이는 람다 값으로 비중으로 조절한다. 이 과정을 문서 집합의 수가 `k`개가 될 때까지 반복한다.
 - `similarity_search_by_vector`, `max_marginal_relevance_search_by_vector`: 앞서 봤던 `similarity_search`와 `max_marginal_relevance_search`를 쿼리에 대한 게 아닌 임베딩 벡터에 대해 수행한다. 입력 인자의 형태만 바뀔 뿐 동작은 같다.
 <br>
+<br>
+<br>
 
 # 리트리버(Retriever)
 
 리트리버(반환기)는 말 그대로 `Document` 들을 반환하는 기능을 하는 컴포넌트이다. 주어진 자연어(혹은 다른 타입의 비정형 데이터)로 구성된 쿼리로 부터 연관된(relevant) `Document`들을 미리 정해진 파라미터에 따라 내어주는 기능을 주로 수행한다.
 
-벡터 스토어와 달리 `Document`들의 임베딩 벡터를 직접 저장해놓지 않으며 그저 반환만 하며 따라서 특정 벡터 스토어를 Backbone으로 사용하는 경우가 많다. 하지만 꼭 특정 벡터 스토어를 기반으로 구축/작동될 필요는 없다. 예를 들어 Ensemble Retriever는 특정 벡터 스토어를 기반으로 작동하는 것이 아닌 복수 개의 다른 Retriever 객체를 받아 혼합한 결과를 반환한다.
+벡터 스토어와 달리 `Document`들의 임베딩 벡터를 직접 저장해놓지 않으며 그저 반환만 한다. 따라서 특정 벡터 스토어를 Backbone으로 사용하는 경우가 많다. 하지만 꼭 특정 벡터 스토어를 기반으로 구축/작동될 필요는 없다. 예를 들어 Ensemble Retriever는 특정 벡터 스토어를 기반으로 작동하는 것이 아닌 복수 개의 다른 Retriever 객체를 받아 혼합한 결과를 반환한다.
 
 ## 기본 사용법
 
@@ -189,7 +206,7 @@ def as_retriever(self, **kwargs: Any) -> VectorStoreRetriever:
     return VectorStoreRetriever(vectorstore=self, tags=tags, **kwargs)
 ```
 
-코드를 보면 태그객체는 만들어 그것을 기반으로 `VectorStoreRetriever` 인스턴스를 생성, 반환한다. `VectorStoreRetriever`는 벡터스토어를 기반으로 한 리트리버의 한 종류로   `BaseRetriver`를 상속 받아 정의된다. `BaseRetriver` 부터 차례 대로 살펴보자.
+코드를 보면 태그객체를 만들어 그것을 기반으로 `VectorStoreRetriever` 인스턴스를 생성, 반환한다. `VectorStoreRetriever`는 벡터스토어를 기반으로 한 리트리버의 한 종류로   `BaseRetriver`를 상속 받아 정의된다. `BaseRetriver` 부터 차례 대로 살펴보자.
 
 ## 기본 클래스 구조 분석
 
@@ -203,9 +220,9 @@ Retriever는 [러너블 인터페이스](https://python.langchain.com/v0.1/docs/
 
 ```python
 @abstractmethod
-    def _get_relevant_documents(
-        self, query: str, *, run_manager: CallbackManagerForRetrieverRun
-    ) -> List[Document]:
+def _get_relevant_documents(
+    self, query: str, *, run_manager: CallbackManagerForRetrieverRun
+) -> List[Document]:
 ```
 
 `BaseRetriver`는 위에서 살펴본 VectorStore 클래스처럼 ABC 클래스를 상속받아 정의된 추상 클래스이다. `_get_relevant_document` 메서드는 `@abstractmethod` 데코레이터가 있기에 하위 클래스에서 **반드시** 재정의를 해야 한다.
@@ -242,20 +259,20 @@ def _get_relevant_documents(self, query: str, *, run_manager: CallbackManagerFor
     return docs
 ```
 
-즉 현재 리트리버에서 사용 중인 `vectorStore`에서 정의된 `similarity_search`, `similarity_search_with_relevance_scores`, `max_marginal_relevance_search`을 `search_type` 변수에 따라 다르게 쓰는 것일 뿐이다.
+즉 현재 리트리버에서 사용 중인 `vectorStore`에서 정의된 `similarity_search`, `similarity_search_with_relevance_scores`, `max_marginal_relevance_search`을 `search_type` 변수에 따라 다르게 쓰는 것일 뿐이다. 이 의미는 리트리버는 그저 껍데기에 불과하고 벡터 스토어에서 위 메서드들을 어떻게 정의하는지가 가장 중요다는 것이다.
 
 
 ## 활용 클래스 구조 분석
 
 ### [BM25Retriever](https://api.python.langchain.com/en/latest/retrievers/langchain_community.retrievers.bm25.BM25Retriever.html)
 
-`BaseRetriever`를 상속받아 구성한 리트리버 중 알아볼 두번째 리트리버는 `BM25Retriever`이다. `BM25Retriever`는 BM25 알고리즘을 활용한 문서 반환 리트리버이다. TF-IDF 값을 사용한 기법인데 알고리즘에 대한 자세한 내용은 [문서](https://abluesnake.tistory.com/179)를 참고하면 되고 LangChain에서 어떻게 구현돼 사용되고 있는지 살펴보자.
+`BaseRetriever`를 상속받아 구성한 리트리버 중 알아볼 두번째 리트리버는 `BM25Retriever`이다. `BM25Retriever`는 BM25 알고리즘을 활용한 문서 반환 리트리버이다. TF-IDF 값을 사용한 기법인데 알고리즘에 대한 자세한 내용은 [문서](https://www.cs.otago.ac.nz/homepages/andrew/papers/2014-2.pdf)를 참고하면 되고 LangChain에서 어떻게 구현돼 사용되고 있는지 살펴보자.
 
-위의 `VectorStoreRetriever`가 `vectorStore`를 가지고 가며 그 안의 search 메서드들을 사용해 `_get_relevant_documents` 메서드를 정의해 사용하는 것처럼 `BM25Retriever`는 `vectorizer`라는 인스턴스 변수를 사용해 `_get_relevant_documents` 실행시 입력 쿼리에 대해 bm25 알고리즘을 실행해 가장 유사한 `k`개의 문서를 찾아준다.
+위의 `VectorStoreRetriever`가 `vectorStore`를 갖고 있고 그 안의 search 메서드들을 활용한 `_get_relevant_documents` 메서드를 정의해 사용하는 것처럼 `BM25Retriever`는 `vectorizer`라는 인스턴스 변수를 사용해 `_get_relevant_documents` 실행시 입력 쿼리에 대해 bm25 알고리즘을 실행해 가장 유사한 `k`개의 문서를 찾아준다.
 
 #### 리트리버 생성
 
-먼저 리트리버를 생성해야하는데, 미리 만들어둔 벡터 스토어가 있는게 아니기에 따로 문서들을 loading 해줘야한다. 벡터 스토어처럼 클래스 메서드인 `from_documents`를 사용해 `Document`리스트를 입력으로 받으면 `from_documents`안에서 `from_texts`를 호출해 `BM25Retriever`를 생성, 반환한다. 
+먼저 리트리버를 생성해야하는데, 미리 만들어둔 벡터 스토어가 있는게 아니기에 따로 문서들을 load 해줘야한다. 벡터 스토어처럼 클래스 메서드인 `from_documents`를 사용해 `Document`리스트를 입력으로 받으면 `from_documents`안에서 `from_texts`를 호출해 `BM25Retriever`가 생성, 반환된다. 
 
 ```py
 @classmethod
@@ -316,14 +333,17 @@ def _get_relevant_documents(
         return return_docs
 ```
 
+관건은 앞선 `VectorStoreRetriever`와 마찬가지로 `vectorizer.get_top_n` 메서드가 기능의 핵심이며 리트리버는 그저 통합 인터페이스의 역할을 한다는 것이다. 새로운 커스텀 리트리버를 만들 때 이러한 점을 잘 파악해 제작해야할 것이다.
+
 
 ### [EnsembleRetriever](https://api.python.langchain.com/en/latest/retrievers/langchain.retrievers.ensemble.EnsembleRetriever.html)
 
-앙상블 리트리버는 위에서 살펴본 두 리트리버(`VectorStoreRetriever`, `BM25Retriever`)와 다르게 특정 검색기를 통해, 또는 의존해 검색하는 리트리버가 아닌 여러 개의 리트리버를 혼합해 사용하는 리트리버이다. 
+`EnsembleRetriever`는 위에서 살펴본 두 리트리버(`VectorStoreRetriever`, `BM25Retriever`)와 다르게 특정 검색기를 통해, 또는 의존해 검색하는 리트리버가 아닌 여러 개의 리트리버를 혼합해 사용하는 리트리버이다. 
+`EnsembleRetriever`는 인스턴스 변수에 여러 리트리버들을 리스트로 가지고 있으며 리트리버들의 `_get_relevant_documents` 메서드의 결과들은 [Reciprocal Rank Fusion(RRF)](https://plg.uwaterloo.ca/~gvcormac/cormacksigir09-rrf.pdf) 알고리즘에 의해 혼합되어 마지막 결과를 내어 반환된다. 
 
-예를 들어 FAISS 벡터스토어의 리트리버를 기반으로 문서를 반환하되 BM25 리트리버도 같이 사용하고 싶고 두 리트리버의 가중치를 지정해 사용하고 싶은 경우 각 리트리버 객체를 만든 뒤 앙상블 리트리버에 넣어주면 된다.
+예를 들어 FAISS 벡터스토어의 리트리버를 기반으로 문서를 반환하되 BM25 리트리버도 같이 사용하고 싶고 두 리트리버의 가중치를 지정해 사용하고 싶은 경우 각 리트리버 객체를 만든 뒤 `EnsembleRetriever`에 넣어주면 된다.
 
-앙상블 리트리버는 클래스 변수에 여러 리트리버들을 리스트로 가지고 있으며 리트리버들의 `_get_relevant_documents` 메서드의 결과들은 [Reciprocal Rank Fusion(RRF)](https://plg.uwaterloo.ca/~gvcormac/cormacksigir09-rrf.pdf) 알고리즘에 의해 혼합되어 마지막 결과를 내어 반환된다. 
+앞서 살펴본 두 리트리버가 다른 클래스의 로직에 의존하는 것과 달리 자체적으로 구현된 로직을 가지고 있아 코드를 분석해보면 큰 도움이 될 것 같다.
 
 인스턴스 변수는 `retrievers: List[RetrieverLike]`, `weights: List[float]`, `c: int = 60`가 있는데 각 리트리버마다 `weight` 값을 줘서($0<= weight <= 1$) 가중 비율을 결정해줘야 하며, 명시적으로 주지 않을 경우 디폴트로 각 리트리버에 균등하게 분배해준다. `c`는 RRF 스코어 계산을 위한 상수로 60으로 고정하는 듯 하다.
 
@@ -390,6 +410,17 @@ def weighted_reciprocal_rank(self, doc_lists: List[List[Document]]) -> List[Docu
 
 > $RRFscore(d \in D) = w * \sum \frac{1}{k + rank(d)}$
 
-이 때 다른 `doc_list`에서 나타난 문서가 이전에 이미 있던 문서라면 RRF 값은 누적되어 쌓인다.
+이 때 다른 `doc_list`에서 나타난 문서가 이전에 이미 있던 문서라면 RRF 값은 누적되어 쌓인다. 마지막으로 유니크한 Document들은 RRF 스코어를 기준으로 내림차순 정렬되어 반환되는 것이다.
 
-마지막으로 유니크한 Document들은 RRF 스코어를 기준으로 내림차순 정렬되어 반환되는 것이다.
+<br>
+<br>
+
+#### 참고 링크
+
+---
+- Langchain Python API Reference(0.2.13) [[🔗](https://api.python.langchain.com/en/latest/langchain_api_reference.html)]
+- LangChain: Vector Stores [[🔗](https://python.langchain.com/v0.1/docs/modules/data_connection/vectorstores/)]
+- ㅍㅍㅋㄷ - Python ABC(Abstract Base Class) 추상화 클래스[[🔗](https://bluese05.tistory.com/61)]
+- Trotman, A., Puurula, A., & Burgess, B. (2014, November). Improvements to BM25 and language models examined. In Proceedings of the 19th Australasian Document Computing Symposium (pp. 58-65).  [[🔗](http://www.cs.otago.ac.nz/homepages/andrew/papers/2014-2.pdf)]
+
+- Cormack, G. V., Clarke, C. L., & Buettcher, S. (2009, July). Reciprocal rank fusion outperforms condorcet and individual rank learning methods. In Proceedings of the 32nd international ACM SIGIR conference on Research and development in information retrieval (pp. 758-759). [[🔗](https://plg.uwaterloo.ca/~gvcormac/cormacksigir09-rrf.pdf)]
