@@ -240,4 +240,78 @@ def _get_relevant_documents(self, query: str, *, run_manager: CallbackManagerFor
     return docs
 ```
 
-즉 현재 리트리버에서 사용 중인 vectorStore에서 정의된 `similarity_search`, `similarity_search_with_relevance_scores`, `max_marginal_relevance_search`을 `search_type` 변수에 따라 다르게 쓰는 것일 뿐이다.
+즉 현재 리트리버에서 사용 중인 `vectorStore`에서 정의된 `similarity_search`, `similarity_search_with_relevance_scores`, `max_marginal_relevance_search`을 `search_type` 변수에 따라 다르게 쓰는 것일 뿐이다.
+
+
+## 활용 클래스 구조 분석
+
+### 1. [BM25Retriever](https://api.python.langchain.com/en/latest/retrievers/langchain_community.retrievers.bm25.BM25Retriever.html)
+
+`BaseRetriever`를 상속받아 구성한 리트리버 중 알아볼 두번째 리트리버는 `BM25Retriever`이다. `BM25Retriever`는 BM25 알고리즘을 활용한 문서 반환 리트리버이다. TF-IDF 값을 사용한 기법인데 알고리즘에 대한 자세한 내용은 [문서](https://abluesnake.tistory.com/179)를 참고하면 되고 LangChain에서 어떻게 구현돼 사용되고 있는지 살펴보자.
+
+위의 `VectorStoreRetriever`가 `vectorStore`를 가지고 가며 그 안의 search 메서드들을 사용해 `_get_relevant_documents` 메서드를 정의해 사용하는 것처럼 `BM25Retriever`는 `vectorizer`라는 인스턴스 변수를 사용해 `_get_relevant_documents` 실행시 입력 쿼리에 대해 bm25 알고리즘을 실행해 가장 유사한 `k`개의 문서를 찾아준다.
+
+#### 리트리버 생성
+
+먼저 리트리버를 생성해야하는데, 미리 만들어둔 벡터 스토어가 있는게 아니기에 따로 문서들을 loading 해줘야한다. 벡터 스토어처럼 클래스 메서드인 `from_documents`를 사용해 `Document`리스트를 입력으로 받으면 `from_documents`안에서 `from_texts`를 호출해 `BM25Retriever`를 생성, 반환한다. 
+
+```py
+@classmethod
+def from_documents(
+    cls, documents: Iterable[Document], *, bm25_params: Optional[Dict[str, Any]] = None,
+    preprocess_func: Callable[[str], List[str]] = default_preprocessing_func, **kwargs: Any,
+) -> BM25Retriever:
+
+# 입력으로 받은 Document들을 텍스트와 메타데이터로 분리하여 from_texts에 넣어줌
+texts, metadatas = zip(*((d.page_content, d.metadata) for d in documents))
+    return cls.from_texts(
+        texts=texts,
+        bm25_params=bm25_params,
+        metadatas=metadatas,
+        preprocess_func=preprocess_func,
+        **kwargs,
+    )
+
+@classmethod
+def from_texts(
+    cls, texts: Iterable[str], metadatas: Optional[Iterable[dict]] = None,
+    bm25_params: Optional[Dict[str, Any]] = None, preprocess_func: Callable[[str], List[str]] = default_preprocessing_func, **kwargs: Any,
+    ) -> BM25Retriever:
+
+    try:
+        from rank_bm25 import BM25Okapi
+    except ImportError:
+        raise ImportError(
+            "Could not import rank_bm25, please install with `pip install "
+            "rank_bm25`."
+        )
+
+    # texts: Document에서 받은 page_content 텍스트들로 preprocess_func() 함수 거쳐 텍스트 더미로 만듦, preprocess_func()는 디폴트가 split() 함수
+    texts_processed = [preprocess_func(t) for t in texts]
+    bm25_params = bm25_params or {}
+    
+    # rank_bm25라이브러리에서 BM25Okapi를 임포트하여 vectorizer에 부여 
+    vectorizer = BM25Okapi(texts_processed, **bm25_params)
+    metadatas = metadatas or ({} for _ in texts)
+
+    # 앞에서 나눠줬던 텍스트와 메타데이터들은 다시 Document로 구성해 저장
+    docs = [Document(page_content=t, metadata=m) for t, m in zip(texts, metadatas)]
+    return cls(
+        vectorizer=vectorizer, docs=docs, preprocess_func=preprocess_func, **kwargs
+    )
+```
+
+#### 문서 검색
+
+검색은 매우 간단하게 구성돼있다. 우선 입력으로 받은 쿼리를 `preprocess_func(query)`로 전처리한 뒤 앞서 인스턴스 생성시 `vectorizer`변수에 부여해놓은 `BM25Okapi`의 `get_top_n`함수에 넣어 인스턴스가 가지고 있는 `Document`들 중 쿼리와 가장 유사한 상위 `k`개의 문서를 반환하는 간단한 구조이다.
+
+```py
+def _get_relevant_documents(
+        self, query: str, *, run_manager: CallbackManagerForRetrieverRun
+    ) -> List[Document]:
+        processed_query = self.preprocess_func(query)
+        return_docs = self.vectorizer.get_top_n(processed_query, self.docs, n=self.k)
+        return return_docs
+```
+
+
