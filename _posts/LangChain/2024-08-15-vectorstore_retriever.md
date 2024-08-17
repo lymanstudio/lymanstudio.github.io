@@ -171,7 +171,7 @@ def from_texts(
 - `similarity_search_by_vector`, `max_marginal_relevance_search_by_vector`: 앞서 봤던 `similarity_search`와 `max_marginal_relevance_search`를 쿼리에 대한 게 아닌 임베딩 벡터에 대해 수행한다. 입력 인자의 형태만 바뀔 뿐 동작은 같다.
 <br>
 
-# 리트리버(Retrievers)
+# 리트리버(Retriever)
 
 리트리버(반환기)는 말 그대로 `Document` 들을 반환하는 기능을 하는 컴포넌트이다. 주어진 자연어(혹은 다른 타입의 비정형 데이터)로 구성된 쿼리로 부터 연관된(relevant) `Document`들을 미리 정해진 파라미터에 따라 내어주는 기능을 주로 수행한다.
 
@@ -191,7 +191,7 @@ def as_retriever(self, **kwargs: Any) -> VectorStoreRetriever:
 
 ## 기본 클래스 구조 분석
 
-### 1. [BaseRetriever](https://api.python.langchain.com/en/latest/retrievers/langchain_core.retrievers.BaseRetriever.html#langchain_core.retrievers.BaseRetriever)
+### [BaseRetriever](https://api.python.langchain.com/en/latest/retrievers/langchain_core.retrievers.BaseRetriever.html#langchain_core.retrievers.BaseRetriever)
 
 문서 반환시스템(Document reterival system)에 대한 추상 클래스이다. 이 `BaseRetriever`를 상속받아 커스텀 리트리버를 만들 수 있다. 문서 반환 시스템이란 앞서 설명한 것과 같이 **스트링 형식의 쿼리를 받아 가장 연관된 Document들을 반환하는 행위**로 정의될 수 있다.
 
@@ -212,7 +212,7 @@ Retriever는 [러너블 인터페이스](https://python.langchain.com/v0.1/docs/
 
 
 
-### 2. [VectorStoreRetriever](https://api.python.langchain.com/en/latest/vectorstores/langchain_core.vectorstores.base.VectorStoreRetriever.html#langchain_core.vectorstores.base.VectorStoreRetriever)
+### [VectorStoreRetriever](https://api.python.langchain.com/en/latest/vectorstores/langchain_core.vectorstores.base.VectorStoreRetriever.html#langchain_core.vectorstores.base.VectorStoreRetriever)
 
 벡터 스토어를 위한 Retriever이다. 가장 많이 사용하는 형식의 리트리버일 것이다. 기본 인스턴스 변수로 `VectorStore` 객체가 있으며 이 객체의 유사도 검색 메서드를 사용해서 `_get_relevant_documents` 메서드를 실행한다. 
 
@@ -245,7 +245,7 @@ def _get_relevant_documents(self, query: str, *, run_manager: CallbackManagerFor
 
 ## 활용 클래스 구조 분석
 
-### 1. [BM25Retriever](https://api.python.langchain.com/en/latest/retrievers/langchain_community.retrievers.bm25.BM25Retriever.html)
+### [BM25Retriever](https://api.python.langchain.com/en/latest/retrievers/langchain_community.retrievers.bm25.BM25Retriever.html)
 
 `BaseRetriever`를 상속받아 구성한 리트리버 중 알아볼 두번째 리트리버는 `BM25Retriever`이다. `BM25Retriever`는 BM25 알고리즘을 활용한 문서 반환 리트리버이다. TF-IDF 값을 사용한 기법인데 알고리즘에 대한 자세한 내용은 [문서](https://abluesnake.tistory.com/179)를 참고하면 되고 LangChain에서 어떻게 구현돼 사용되고 있는지 살펴보자.
 
@@ -315,3 +315,75 @@ def _get_relevant_documents(
 ```
 
 
+### [EnsembleRetriever](https://api.python.langchain.com/en/latest/retrievers/langchain.retrievers.ensemble.EnsembleRetriever.html)
+
+앙상블 리트리버는 위에서 살펴본 두 리트리버(`VectorStoreRetriever`, `BM25Retriever`)와 다르게 특정 검색기를 통해, 또는 의존해 검색하는 리트리버가 아닌 여러 개의 리트리버를 혼합해 사용하는 리트리버이다. 
+
+예를 들어 FAISS 벡터스토어의 리트리버를 기반으로 문서를 반환하되 BM25 리트리버도 같이 사용하고 싶고 두 리트리버의 가중치를 정해사용하고 싶은 경우 각 리트리버 객체를 만든 뒤 앙상블 리트리버에 넣어주면 된다.
+
+클래스 변수에 이 리트리버들을 리스트로 가지고 있으며 리트리버들의 `_get_relevant_documents` 메서드의 결과들은 [Reciprocal Rank Fusion](chrome-extension://efaidnbmnnnibpcajpcglclefindmkaj/https://plg.uwaterloo.ca/~gvcormac/cormacksigir09-rrf.pdf) 알고리즘에 의해 혼합되어 마지막 결과를 내어 반환한다. 
+
+인스턴스 변수는 `retrievers: List[RetrieverLike]`, `weights: List[float]`, `c: int = 60`가 있는데 각 리트리버마다 `weight` 값을 줘서($0<= weight <= 1$) 가중 비율을 결정해줘야 하며, 명시적으로 주지 않을 경우 디폴트로 각 리트리버에 균등하게 분배해준다. `c`는 Reciprocal Rank Fusion(RRF) 계산을 위한 상수로 60으로 고정하는 듯 하다.
+
+앙상블 리트리터의  `_get_relevant_documents`는 아래 코드와 같이 단순 `rank_fusion`의 호출 결과이다.
+
+```python
+def _get_relevant_documents(
+    self, query: str, *, run_manager: CallbackManagerForRetrieverRun,) -> List[Document]:
+    # Get fused result of the retrievers.
+    fused_documents = self.rank_fusion(query, run_manager)
+
+    return fused_documents
+```
+
+중요한 것은 rank_fusion 메서드인데, 다음과 같다. 
+
+```py
+def rank_fusion(self, query: str, ...) -> List[Document]:
+    # 각 리트리버에서 쿼리에 대한 결과 Document들 반환, 리스트로 저장
+    retriever_docs = [retriever.invoke(query) for i, retriever in enumerate(self.retrievers)]
+
+    # 모든 결과들을 강제로 Document 형태로 저장 List[List[Document]]로 구성한 뒤 
+    for i in range(len(retriever_docs)):
+        retriever_docs[i] = [
+            Document(page_content=cast(str, doc)) if isinstance(doc, str) else doc
+            for doc in retriever_docs[i]
+        ]
+    # weighted_reciprocal_rank 적용 => List[Document]
+    fused_documents = self.weighted_reciprocal_rank(retriever_docs)
+
+    return fused_documents
+
+def weighted_reciprocal_rank(self, doc_lists: List[List[Document]]) -> List[Document]:
+    # rrf 스코어를 마킹할 딕셔너리 초기화
+    rrf_score: Dict[str, float] = defaultdict(float)
+
+    # 각 doc_list(List[Document]) 마다 부여한 weight 값에 따라 각 Document에 대해 RRF 값 계산 후 
+    # rrf_score에 저장, 만약 동일한 문서라면 RRF 값을 더해줌
+    for doc_list, weight in zip(doc_lists, self.weights):
+        for rank, doc in enumerate(doc_list, start=1):
+            rrf_score[
+                doc.page_content
+                if self.id_key is None
+                else doc.metadata[self.id_key]
+            ] += weight / (rank + self.c)# RRF 값은 리스트 내 문서의 rank 값이 작을수록(높을 수록) 큰 값을 가짐
+
+    # 모든 유니크한 Document들은  최종 RRF 스코어 값에 따라 정렬되어 return 됨
+    all_docs = chain.from_iterable(doc_lists)
+    sorted_docs = sorted(
+        unique_by_key(
+            all_docs,
+            lambda doc: doc.page_content
+            if self.id_key is None
+            else doc.metadata[self.id_key],
+        ),
+        reverse=True,
+        key=lambda doc: rrf_score[
+            doc.page_content if self.id_key is None else doc.metadata[self.id_key]
+        ],
+    )
+    return sorted_docs
+```
+`weighted_reciprocal_rank`메서드를 보면 모든 리트리버에서 나온 모든 `Document` 들이 각자가 속한 `doc_list` 내에서의 순위 값과 `doc_list`에 부여된 `weight` 값에 따라 RRF 스코어를 부여받는다. 이 때 다른 `doc_list`에서 나타난 문서가 이전에 이미 있던 문서라면 RRF 값은 누적되어 쌓인다.
+
+마지막으로 유니크한 Document들은 RRF 스코어를 기준으로 내림차순 정렬되어 반환되는 것이다.
