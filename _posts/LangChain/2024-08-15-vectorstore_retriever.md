@@ -319,11 +319,11 @@ def _get_relevant_documents(
 
 앙상블 리트리버는 위에서 살펴본 두 리트리버(`VectorStoreRetriever`, `BM25Retriever`)와 다르게 특정 검색기를 통해, 또는 의존해 검색하는 리트리버가 아닌 여러 개의 리트리버를 혼합해 사용하는 리트리버이다. 
 
-예를 들어 FAISS 벡터스토어의 리트리버를 기반으로 문서를 반환하되 BM25 리트리버도 같이 사용하고 싶고 두 리트리버의 가중치를 정해사용하고 싶은 경우 각 리트리버 객체를 만든 뒤 앙상블 리트리버에 넣어주면 된다.
+예를 들어 FAISS 벡터스토어의 리트리버를 기반으로 문서를 반환하되 BM25 리트리버도 같이 사용하고 싶고 두 리트리버의 가중치를 지정해 사용하고 싶은 경우 각 리트리버 객체를 만든 뒤 앙상블 리트리버에 넣어주면 된다.
 
-클래스 변수에 이 리트리버들을 리스트로 가지고 있으며 리트리버들의 `_get_relevant_documents` 메서드의 결과들은 [Reciprocal Rank Fusion](chrome-extension://efaidnbmnnnibpcajpcglclefindmkaj/https://plg.uwaterloo.ca/~gvcormac/cormacksigir09-rrf.pdf) 알고리즘에 의해 혼합되어 마지막 결과를 내어 반환한다. 
+앙상블 리트리버는 클래스 변수에 여러 리트리버들을 리스트로 가지고 있으며 리트리버들의 `_get_relevant_documents` 메서드의 결과들은 [Reciprocal Rank Fusion(RRF)](chrome-extension://efaidnbmnnnibpcajpcglclefindmkaj/https://plg.uwaterloo.ca/~gvcormac/cormacksigir09-rrf.pdf) 알고리즘에 의해 혼합되어 마지막 결과를 내어 반환된다. 
 
-인스턴스 변수는 `retrievers: List[RetrieverLike]`, `weights: List[float]`, `c: int = 60`가 있는데 각 리트리버마다 `weight` 값을 줘서($0<= weight <= 1$) 가중 비율을 결정해줘야 하며, 명시적으로 주지 않을 경우 디폴트로 각 리트리버에 균등하게 분배해준다. `c`는 Reciprocal Rank Fusion(RRF) 계산을 위한 상수로 60으로 고정하는 듯 하다.
+인스턴스 변수는 `retrievers: List[RetrieverLike]`, `weights: List[float]`, `c: int = 60`가 있는데 각 리트리버마다 `weight` 값을 줘서($0<= weight <= 1$) 가중 비율을 결정해줘야 하며, 명시적으로 주지 않을 경우 디폴트로 각 리트리버에 균등하게 분배해준다. `c`는 RRF 스코어 계산을 위한 상수로 60으로 고정하는 듯 하다.
 
 앙상블 리트리터의  `_get_relevant_documents`는 아래 코드와 같이 단순 `rank_fusion`의 호출 결과이다.
 
