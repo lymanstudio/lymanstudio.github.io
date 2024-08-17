@@ -36,6 +36,8 @@ RAG는 여러 가지 구성요소를 가지고 있으나 그 중 가장 중요�
 
 <div style="text-align: center; color: gray;">그림 출처: <a href="https://python.langchain.com/v0.1/docs/modules/data_connection/vectorstores/">LangChain: Vector Stores</a> </div>
 
+<br>
+
 > 임베딩 벡터에 대해 간단히 설명하자면, 흔하게 관계형 DB에서 쓰이는 정형데이터는 tabalur 형태, 즉 테이블 형태로 행과 열로 구성된 정리된 데이터이다. 이러한 데이터가 아닌 자연어, 사진, 음성파일 등의 비정형 데이터를 다룰 땐 임베딩 벡터라는 형태로 변환하여 저장하고 다룬다. 
 
 임베딩 벡터는 특정한 차원으로 정해진 숫자들의 array로 벡터 하나가 특정 객체를 표현한다고 볼 수 있다. 벡터 형태로 변환해 사용하는 이유는 계산을 하기 위함인데, 벡터 사이의 연산을 통해 벡터 사이의 유사도를 계산할 수 있으며 계산 값에 따라 벡터들, 즉 객체들이 의미적으로 유사한지 상이한지 간접적으로 알 수 있다.
@@ -422,5 +424,4 @@ def weighted_reciprocal_rank(self, doc_lists: List[List[Document]]) -> List[Docu
 - LangChain: Vector Stores [[🔗](https://python.langchain.com/v0.1/docs/modules/data_connection/vectorstores/)]
 - ㅍㅍㅋㄷ - Python ABC(Abstract Base Class) 추상화 클래스[[🔗](https://bluese05.tistory.com/61)]
 - Trotman, A., Puurula, A., & Burgess, B. (2014, November). Improvements to BM25 and language models examined. In Proceedings of the 19th Australasian Document Computing Symposium (pp. 58-65).  [[🔗](http://www.cs.otago.ac.nz/homepages/andrew/papers/2014-2.pdf)]
-
 - Cormack, G. V., Clarke, C. L., & Buettcher, S. (2009, July). Reciprocal rank fusion outperforms condorcet and individual rank learning methods. In Proceedings of the 32nd international ACM SIGIR conference on Research and development in information retrieval (pp. 758-759). [[🔗](https://plg.uwaterloo.ca/~gvcormac/cormacksigir09-rrf.pdf)]
