@@ -34,7 +34,7 @@ toc: true
 
 <br>
 
-### 기본 클래스 구조 분석 : [VectorStore](https://api.python.langchain.com/en/latest/vectorstores/langchain_core.vectorstores.base.VectorStore.html#langchain_core.vectorstores.base.VectorStore.__init__)
+## 기본 클래스 구조 분석 : [VectorStore](https://api.python.langchain.com/en/latest/vectorstores/langchain_core.vectorstores.base.VectorStore.html#langchain_core.vectorstores.base.VectorStore.__init__)
 
 LangChain에서의 벡터 스토어는 앞서 말한 벡터스토어의 기본 기능만을 수행하는 객체로 한정된다. 모든 벡터스토어는 기본 베이스 클래스인 `VectorStore`를 상속받아 구현되며 기본적인 기능들과 그 기능에 대한 관련된 대표적인 메서드들을 리스트업하면 다음과 같다.
 
@@ -51,7 +51,7 @@ LangChain에서의 벡터 스토어는 앞서 말한 벡터스토어의 기본 �
 - 리트리버 생성
   - as_retriever(아래 Retriver 섹션에서 후술)
 
-#### 벡터 스토어 생성
+### 벡터 스토어 생성
 
 벡터스토어를 생성하기 위해 필요한 것은 입력으로 주어지는 스트링들의 리스트이다. 보통은 Loader를 통해 생성된 문서(Document)들의 리스트( `List[Document]`)가 입력이 주어지며 `from_documents` 라는 클래스 메서드를 호출, 여기에 입력된 `Document` 객체 각자를 하나의 임베딩 벡터로 만든다.
 
@@ -85,21 +85,21 @@ def from_texts(
 ) -> VST: # 벡터 스토어 타입 (VST = TypeVar("VST", bound="VectorStore"))
 ```
 
-####  Document 추가/삭제
+###  Document 추가/삭제
 
 기 구성된 vectorStore에 Document를 추가할 수 있다. `from_documents`, `from_texts`의 관계와 마찬가지로 `add_documents`와 `add_texts`가 비슷한 구조로 구현돼있다. `from_documents` 에 추가되는 `List[Document]`를 인자로 주고 page_content와 메타 데이터를 뽑아 따로 리스트로 만들고 두 리스트를 인자로 하여`self.add_texts` 를 호출해 넣어준다. `self.add_texts`는 하위 클래스에서 정의돼야 사용 가능하다. (`raise NotImplementedError("delete method must be implemented by subclass.")`)
 
 삭제 또한 `delete` 메서드로 가능하며 하위 클래스에서 정의된다. 보통은 아래 검색에서 설명할 document_id로 삭제시킨다.
 
-#### Document 검색
+### Document 검색
 
-##### id로 검색
+#### id로 검색
 
 검색은 크게 두가지로 나뉜다. 우선 일반적인 검색은 저장된 `Document`의 ID를 통해 수행 가능하다. 벡터스토어에 현재 저장된 `Document` 들은 `vectorStore.docstore._dict` 로 직접 볼 수 있는데, `document_id(str): Document`의 딕셔너리 형태이다. key값인 document_id를 통해 각 `Document` 객체들을 직접 인덱싱 가능하며 삭제 역시 바로 가능하다.
 
 만약 어떤 한 Document의 ID를 알면 `self.docstore.search(_id)`로 직접 인덱싱이 가능하다. (* 기본적으로 `get_by_ids` 라는 메서드가 있는데 구현은 안되고 있는 것 같다.)
 
-##### 시멘틱 검색
+#### 시멘틱 검색
 
 시멘틱 검색, 즉 의미적으로 검색할 수 있는 기능은 벡터 스토어나 벡터 DB를 사용하는 가장 주된 이유일 것이다. 일반적인 검색이 단순히 단어들 간의 매칭이라면 시멘틱 검색은 벡터 스페이스 내에 존재하는 임베딩 벡터사이의 거리 또는 각도를 기반으로 한 유사도를 통한 검색을 의미한다. 
 
@@ -165,13 +165,13 @@ def from_texts(
     - $\text{MMR}(d_i) = \lambda \cdot \text{Rel}(d_i, q) - (1 - \lambda) \cdot \max_{d_j \in S} \text{Sim}(d_i, d_j)$
     - 뽑힌 전체 문서들 중 가장 연관성이 높은 첫 문서($d_1$)은 바로 문서 집합 $S$에 넣고 이후, 각 단계에서 아직 선택되지 않은 문서들 중에서 MMR 점수가 가장 높은 문서를 선택한다. 이때, 새롭게 선택될 문서는 쿼리와의 관련성뿐만 아니라 이미 선택된 문서들과의 유사성을 동시에 고려합니다. 이는 람다 값으로 비중으로 조절한다. 이 과정을 문서 집합의 수가 `k`개가 될 때까지 반복한다.
 - `similarity_search_by_vector`, `max_marginal_relevance_search_by_vector`: 앞서 봤던 `similarity_search`와 `max_marginal_relevance_search`를 쿼리에 대한 게 아닌 임베딩 벡터에 대해 수행한다. 입력 인자의 형태만 바뀔 뿐 동작은 같다.
-## 리트리버(Retrievers)
+# 리트리버(Retrievers)
 
 리트리버(반환기)는 말 그대로 `Document` 들을 반환하는 기능을 하는 컴포넌트이다. 주어진 자연어(혹은 다른 타입의 비정형 데이터)로 구성된 쿼리로 부터 연관된(relevant) `Document`들을 미리 정해진 파라미터에 따라 내어주는 기능을 주로 수행한다.
 
 벡터 스토어와 달리 `Document`들의 임베딩 벡터를 직접 저장해놓지 않으며 그저 반환만 하며 따라서 특정 벡터 스토어를 Backbone으로 사용하는 경우가 많다. 하지만 꼭 특정 벡터 스토어를 기반으로 구축/작동될 필요는 없다. 예를 들어 Ensemble Retriever는 특정 벡터 스토어를 기반으로 작동하는 것이 아닌 복수 개의 다른 Retriever 객체를 받아 혼합한 결과를 반환한다.
 
-#### 기본 사용법
+## 기본 사용법
 
 특정 벡터 스토어를 기반으로 구축된 보통의 리트리버는 벡터 스토어의 베이스 클래스인 [vectorStore](https://api.python.langchain.com/en/latest/_modules/langchain_core/vectorstores/base.html#VectorStore.from_texts)에서 as_retriever()로 만들어진다. 아래는 한 벡터스토어 인스턴스에서 현재 벡터스토어를 사용해 VectorStoreRetriever 객체를 만들어 반환하는 단순한 코드이다.
 
@@ -183,9 +183,9 @@ def as_retriever(self, **kwargs: Any) -> VectorStoreRetriever:
 
 코드를 보면 태그객체는 만들어 그것을 기반으로 `VectorStoreRetriever` 인스턴스를 생성, 반환한다. `VectorStoreRetriever`는 벡터스토어를 기반으로 한 리트리버의 한 종류로   `BaseRetriver`를 상속 받아 정의된다. `BaseRetriver` 부터 차례 대로 살펴보자.
 
-### 기본 클래스 구조 분석
+## 기본 클래스 구조 분석
 
-#### 1. [BaseRetriever](https://api.python.langchain.com/en/latest/retrievers/langchain_core.retrievers.BaseRetriever.html#langchain_core.retrievers.BaseRetriever)
+### 1. [BaseRetriever](https://api.python.langchain.com/en/latest/retrievers/langchain_core.retrievers.BaseRetriever.html#langchain_core.retrievers.BaseRetriever)
 
 문서 반환시스템(Document reterival system)에 대한 추상 클래스이다. 이 `BaseRetriever`를 상속받아 커스텀 리트리버를 만들 수 있다. 문서 반환 시스템이란 앞서 설명한 것과 같이 **스트링 형식의 쿼리를 받아 가장 연관된 Document들을 반환하는 행위**로 정의될 수 있다.
 
@@ -206,7 +206,7 @@ Retriever는 [러너블 인터페이스](https://python.langchain.com/v0.1/docs/
 
 
 
-#### 2. [VectorStoreRetriever](https://api.python.langchain.com/en/latest/vectorstores/langchain_core.vectorstores.base.VectorStoreRetriever.html#langchain_core.vectorstores.base.VectorStoreRetriever)
+### 2. [VectorStoreRetriever](https://api.python.langchain.com/en/latest/vectorstores/langchain_core.vectorstores.base.VectorStoreRetriever.html#langchain_core.vectorstores.base.VectorStoreRetriever)
 
 벡터 스토어를 위한 Retriever이다. 가장 많이 사용하는 형식의 리트리버일 것이다. 기본 인스턴스 변수로 `VectorStore` 객체가 있으며 이 객체의 유사도 검색 메서드를 사용해서 `_get_relevant_documents` 메서드를 실행한다. 
 
