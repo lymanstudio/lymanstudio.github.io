@@ -165,6 +165,8 @@ def from_texts(
     - $\text{MMR}(d_i) = \lambda \cdot \text{Rel}(d_i, q) - (1 - \lambda) \cdot \max_{d_j \in S} \text{Sim}(d_i, d_j)$
     - 뽑힌 전체 문서들 중 가장 연관성이 높은 첫 문서($d_1$)은 바로 문서 집합 $S$에 넣고 이후, 각 단계에서 아직 선택되지 않은 문서들 중에서 MMR 점수가 가장 높은 문서를 선택한다. 이때, 새롭게 선택될 문서는 쿼리와의 관련성뿐만 아니라 이미 선택된 문서들과의 유사성을 동시에 고려합니다. 이는 람다 값으로 비중으로 조절한다. 이 과정을 문서 집합의 수가 `k`개가 될 때까지 반복한다.
 - `similarity_search_by_vector`, `max_marginal_relevance_search_by_vector`: 앞서 봤던 `similarity_search`와 `max_marginal_relevance_search`를 쿼리에 대한 게 아닌 임베딩 벡터에 대해 수행한다. 입력 인자의 형태만 바뀔 뿐 동작은 같다.
+<br>
+
 # 리트리버(Retrievers)
 
 리트리버(반환기)는 말 그대로 `Document` 들을 반환하는 기능을 하는 컴포넌트이다. 주어진 자연어(혹은 다른 타입의 비정형 데이터)로 구성된 쿼리로 부터 연관된(relevant) `Document`들을 미리 정해진 파라미터에 따라 내어주는 기능을 주로 수행한다.
