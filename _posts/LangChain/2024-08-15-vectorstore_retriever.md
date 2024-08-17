@@ -384,7 +384,7 @@ def weighted_reciprocal_rank(self, doc_lists: List[List[Document]]) -> List[Docu
     )
     return sorted_docs
 ```
-`weighted_reciprocal_rank`메서드를 보면 모든 리트리버에서 나온 모든 `Document` 들이 각자가 속한 `doc_list` 내에서의 순위 값과 `doc_list`에 부여된 `weight` 값에 따라 RRF 스코어를 부여받는다. 
+`weighted_reciprocal_rank`메서드를 보면 모든 리트리버에서 나온 모든 `Document` 들이 각자($d$)가 속한 `doc_list`($D$) 내에서의 순위 값($rank(d)$)과 `doc_list`에 부여된 `weight` 값($w$)에 따라 RRF 스코어를 부여받는다. 
 ($RRFscore(d \in D) = w * \sum \frac{1}{k + rank(d)}$)
 
 이 때 다른 `doc_list`에서 나타난 문서가 이전에 이미 있던 문서라면 RRF 값은 누적되어 쌓인다.
