@@ -8,7 +8,7 @@ use_math: true
 toc: true
 ---
 
-## RAG flow Overview
+# RAG flow Overview
 
 ![vector_store_search.drawio](./../../images/2024-08-15-vectorstore_retriever/vector_store_search.drawio.png)
 
@@ -16,7 +16,7 @@ toc: true
 
 <br>
 
-## 벡터 스토어(VectorStore)
+# 벡터 스토어(VectorStore)
 
 벡터 스토어는 RAG의 중요한 컴포넌트 중 하나로 비정형 데이터를 임베딩 벡터로 변환 & 저장하고 사용자의 비정형 질의 또한 임베드 하여 저장된 임베딩 벡터과 유사도를 계산, 가장 유사한 임베딩 벡터를 반환하는 기능까지 수행한다. 
 
