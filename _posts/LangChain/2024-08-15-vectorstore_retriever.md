@@ -36,7 +36,11 @@ toc: true
 
 ## 기본 클래스 구조 분석 : [VectorStore](https://api.python.langchain.com/en/latest/vectorstores/langchain_core.vectorstores.base.VectorStore.html#langchain_core.vectorstores.base.VectorStore.__init__)
 
-LangChain에서의 벡터 스토어는 앞서 말한 벡터스토어의 기본 기능만을 수행하는 객체로 한정된다. 모든 벡터스토어는 기본 베이스 클래스인 `VectorStore`를 상속받아 구현되며 기본적인 기능들과 그 기능에 대한 관련된 대표적인 메서드들을 리스트업하면 다음과 같다.
+LangChain에서의 벡터 스토어는 앞서 말한 벡터스토어의 기본 기능만을 수행하는 객체로 한정된다. 모든 벡터스토어는 기본 베이스 클래스인 `VectorStore`를 상속받아 구현된다.
+
+`VectorStore`는 추상 클래스인 `ABC`([*참고](https://bluese05.tistory.com/61)) 를 상속받아 정의된 추상클래스이다. 따라서 상속받는 모든 하위 클래스들이 동일한 작동 구조를 따르게 하기 위한 기본적인 인터페이스의 골자만 추상적으로 정의돼 있으며 실제로 사용하기 위해선 무조건 상속받은 하위 클래스를 정의한 뒤 객체를 만들어 사용해야 한다.
+
+`VectorStore`의 기본적인 기능들과 그 기능에 대한 관련된 대표적인 메서드들을 리스트업하면 다음과 같다.
 
 - 생성
   - from_texts
@@ -202,7 +206,7 @@ Retriever는 [러너블 인터페이스](https://python.langchain.com/v0.1/docs/
     ) -> List[Document]:
 ```
 
-`BaseRetriver`는 추상 클래스인 `ABC`([*참고](https://bluese05.tistory.com/61)) 를 상속받아 정의됐으며 `_get_relevant_document` 메서드는 `@abstractmethod` 데코레이터가 있기에 하위 클래스에서 **반드시** 재정의를 해야 한다.
+`BaseRetriver`는 위에서 살펴본 VectorStore 클래스처럼 ABC 클래스를 상속받아 정의된 추상 클래스이다. `_get_relevant_document` 메서드는 `@abstractmethod` 데코레이터가 있기에 하위 클래스에서 **반드시** 재정의를 해야 한다.
 
 (`get_releavant_documents`는 0.1.46버전 부터 deprecated 상태이며 0.3 버전 이후부터 삭제될 예정이라고 하니 사용 안하는 게 좋을 것 같다.)
 
