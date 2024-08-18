@@ -115,6 +115,14 @@ def from_texts(
 
 검색은 크게 두가지로 나뉜다. 우선 일반적인 검색은 저장된 `Document`의 ID를 통해 수행 가능하다. 벡터스토어에 현재 저장된 `Document` 들은 `vectorStore.docstore._dict` 로 직접 볼 수 있는데, `document_id(str): Document`의 딕셔너리 형태이다. key값인 document_id를 통해 각 `Document` 객체들을 직접 인덱싱 가능하며 삭제 역시 바로 가능하다.
 
+```py
+docStore_dict = vectorStore.docstore.__dict__['_dict']
+doc_ids = vectorStore.index_to_docstore_id # 0부터 시작하는 index와 docstore의 document_id 사이의 딕셔너리
+
+print(docStore_dict.get(doc_ids[0]))
+>>> page_content='문서 내용' metadata={'url':'https://...' ... } 
+```
+
 임베딩된 벡터는 구현된 vectorStore 마다 다른 방식을 취하여 저장할 것이다. FAISS의 경우 vectorStore.index 객체에 저장된다. 아래 코드를 통해 직접 임베딩 벡터를 볼 수 있다. 
 ```py
 vectorStore = FAISS.from_documents(docs, embedding = embedding)
