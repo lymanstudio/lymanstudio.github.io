@@ -499,7 +499,7 @@ def __from(
 
 #### 테스트 2. Q: 음반에 대해 설명해줘
 
-- Vanilla FAISS(ret) 
+- Vanilla FAISS(ret)
   ```
   0. Section: 활동/공연 및 행사//개요
   	 ILLIT의 공연 및 행사를 서술한 문서이다.
@@ -563,11 +563,3 @@ def __from(
   
    Answer: No Answer found.
   ```
-
-  
-
-
-
-- Vanilla FAISS(ret) 
-- FaissMetaVectorStore, metadata embedding(ret_meta) 
-- FaissMetaVectorStore, PageContent embedding(ret_pc) 
